@@ -1,9 +1,16 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Index from "./pages/Index";
+import { AnimatePresence } from "framer-motion";
+import LandingPage from "./pages/LandingPage";
+import LoadingScreen from "./components/LoadingScreen";
+import AttributeSelectionPage from "./pages/AttributeSelectionPage";
+import OctagonViewPage from "./pages/OctagonViewPage";
+import SegmentProfilePage from "./pages/SegmentProfilePage";
+import CampaignPage from "./pages/CampaignPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -14,11 +21,17 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        <AnimatePresence mode="wait">
+          <Routes>
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/loading" element={<LoadingScreen />} />
+            <Route path="/attributes" element={<AttributeSelectionPage />} />
+            <Route path="/octagon" element={<OctagonViewPage />} />
+            <Route path="/profiles/:segmentId" element={<SegmentProfilePage />} />
+            <Route path="/campaigns/:segmentId" element={<CampaignPage />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </AnimatePresence>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
