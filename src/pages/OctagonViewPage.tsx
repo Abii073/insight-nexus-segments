@@ -1,21 +1,11 @@
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 import Logo from '../components/Logo';
 import OctagonView from '../components/OctagonView';
 import { Card } from "@/components/ui/card";
-import { toast } from "@/components/ui/use-toast";
 
 const OctagonViewPage = () => {
-  useEffect(() => {
-    // Add a toast notification to let users know about the WebGL interaction
-    toast({
-      title: "Interactive 3D Octagon Loaded",
-      description: "Click and drag to rotate. Click on a segment to explore that customer profile.",
-      duration: 5000,
-    });
-  }, []);
-
   return (
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="container mx-auto max-w-6xl">
@@ -31,7 +21,7 @@ const OctagonViewPage = () => {
           className="mb-6"
         >
           <h1 className="text-3xl font-bold text-gray-800">
-            3D Octagon Segmentation Map
+            Customer Segmentation Map
           </h1>
           <p className="text-gray-600 mt-2">
             Our AI has identified 8 distinct customer segments for your business
@@ -55,7 +45,7 @@ const OctagonViewPage = () => {
             transition={{ duration: 0.3, delay: 0.2 }}
           >
             <Card className="h-full p-6 bg-white shadow-sm">
-              <h2 className="text-xl font-bold mb-4">How to use this view</h2>
+              <h2 className="text-xl font-bold mb-4">Customer Segments</h2>
               
               <ul className="space-y-4">
                 <li className="flex">
@@ -65,8 +55,8 @@ const OctagonViewPage = () => {
                     </svg>
                   </div>
                   <div>
-                    <p className="font-medium text-gray-800">Click and drag</p>
-                    <p className="text-sm text-gray-500">Rotate the octagon to view different perspectives</p>
+                    <p className="font-medium text-gray-800">Tech-Savvy</p>
+                    <p className="text-sm text-gray-500">Digitally-focused customers who prefer online interactions</p>
                   </div>
                 </li>
                 
@@ -77,8 +67,8 @@ const OctagonViewPage = () => {
                     </svg>
                   </div>
                   <div>
-                    <p className="font-medium text-gray-800">Hover over segments</p>
-                    <p className="text-sm text-gray-500">See basic information about each customer group</p>
+                    <p className="font-medium text-gray-800">Conservative</p>
+                    <p className="text-sm text-gray-500">Traditional customers who value stability and familiarity</p>
                   </div>
                 </li>
                 
@@ -90,8 +80,8 @@ const OctagonViewPage = () => {
                     </svg>
                   </div>
                   <div>
-                    <p className="font-medium text-gray-800">Click on a segment</p>
-                    <p className="text-sm text-gray-500">View detailed profiles and insights</p>
+                    <p className="font-medium text-gray-800">Multichannel</p>
+                    <p className="text-sm text-gray-500">Customers who engage across multiple platforms</p>
                   </div>
                 </li>
                 
@@ -102,23 +92,19 @@ const OctagonViewPage = () => {
                     </svg>
                   </div>
                   <div>
-                    <p className="font-medium text-gray-800">Segment size</p>
-                    <p className="text-sm text-gray-500">Larger segments represent a higher percentage of your customer base</p>
+                    <p className="font-medium text-gray-800">Value Seekers</p>
+                    <p className="text-sm text-gray-500">Price-sensitive customers focused on deals and discounts</p>
                   </div>
                 </li>
               </ul>
               
               <div className="mt-6 p-4 bg-blue-50 rounded-md">
                 <p className="text-sm text-blue-800">
-                  <strong>Pro Tip:</strong> Focus on larger segments first to maximize your return on marketing investment.
+                  <strong>Tip:</strong> Click on any segment to explore detailed customer profiles and targeted recommendations.
                 </p>
               </div>
             </Card>
           </motion.div>
-        </div>
-        
-        <div className="mt-8 text-center text-sm text-gray-500">
-          <p>Click on a segment to explore more detailed customer profiles and campaign recommendations.</p>
         </div>
       </div>
     </div>
