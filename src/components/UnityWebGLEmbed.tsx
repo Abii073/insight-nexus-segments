@@ -7,11 +7,42 @@ interface UnityWebGLEmbedProps {
   className?: string;
 }
 
+// src/components/UnityWebGLEmbed.tsx
+
+// ... (otros imports)
+
+//codigo agregado por google ai studio
 declare global {
   interface Window {
-    unityInstance: any;
+    // La instancia de Unity, una vez creada. Hazla opcional porque no existe hasta después de la creación.
+    unityInstance?: any; // Puedes ser más específico si conoces la estructura del objeto unityInstance
+
+    // La función que carga y crea la instancia de Unity.
+    // La firma exacta puede variar ligeramente según la versión de Unity,
+    // pero generalmente toma el canvas, la configuración y una función de progreso.
+    createUnityInstance: (
+      canvasHtmlElement: HTMLCanvasElement,
+      config: {
+        dataUrl: string;
+        frameworkUrl: string;
+        codeUrl: string;
+        streamingAssetsUrl?: string;
+        companyName?: string;
+        productName?: string;
+        productVersion?: string;
+        // ...otras propiedades de configuración que uses
+      },
+      onProgress?: (progress: number) => void
+    ) => Promise<any>; // Retorna una promesa que resuelve a la unityInstance
+
+    // Tu función de callback para que Unity la llame.
+    // Hazla opcional porque la defines tú mismo en tu componente.
+    receiveSegmentClickFromUnity?: (segmentName: string, isSelectedStr: string) => void;
   }
 }
+//codigo agregado por google ai studio
+
+// ... (resto de tu componente UnityWebGLEmbed)
 
 const UnityWebGLEmbed: React.FC<UnityWebGLEmbedProps> = ({ onSegmentClick, className = '' }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -40,6 +71,35 @@ const UnityWebGLEmbed: React.FC<UnityWebGLEmbedProps> = ({ onSegmentClick, class
       }
     };
     
+  //codigo agregado por google ai studio
+    useEffect(() => {
+  // Define la función que Unity llamará
+  window.receiveSegmentClickFromUnity = (segmentName, isSelectedStr) => {
+    console.log(`Unity llamó a receiveSegmentClickFromUnity: ${segmentName}, ${isSelectedStr}`);
+    if (onSegmentClick) { // onSegmentClick es una prop de tu componente React
+      onSegmentClick(segmentName);
+    }
+    // Ejemplo de cómo usar el toast:
+    const isSelected = isSelectedStr.toLowerCase() === 'true';
+    toast({
+      title: "Segmento Seleccionado desde Unity",
+      description: `Segmento: ${segmentName}, Estado: ${isSelected ? 'Seleccionado' : 'Deseleccionado'}`,
+    });
+  };
+
+  // Limpieza al desmontar el componente
+  return () => {
+    if (window.unityInstance && typeof window.unityInstance.Quit === 'function') {
+      window.unityInstance.Quit(() => {
+        console.log("Unity instance quit.");
+      });
+    }
+    delete window.receiveSegmentClickFromUnity;
+    delete window.unityInstance;
+  };
+}, [onSegmentClick, toast]); // Añade las dependencias del useEffect
+//codigo agregado por google ai studio
+
     // Initialize Unity instance
     const initializeUnity = () => {
       if (!canvasRef.current || !window.createUnityInstance) return;
