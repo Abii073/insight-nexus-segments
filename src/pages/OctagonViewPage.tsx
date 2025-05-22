@@ -1,11 +1,21 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Logo from '../components/Logo';
 import OctagonView from '../components/OctagonView';
 import { Card } from "@/components/ui/card";
+import { toast } from "@/components/ui/use-toast";
 
 const OctagonViewPage = () => {
+  useEffect(() => {
+    // Add a toast notification to let users know about the WebGL interaction
+    toast({
+      title: "Interactive 3D Octagon Loaded",
+      description: "Click and drag to rotate. Click on a segment to explore that customer profile.",
+      duration: 5000,
+    });
+  }, []);
+
   return (
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="container mx-auto max-w-6xl">
