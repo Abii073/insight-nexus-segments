@@ -31,7 +31,7 @@ declare global {
       config: any,
       onProgress?: (progress: number) => void
     ) => Promise<any>;
-    receiveSegmentClickFromUnity?: (segmentName: string, isSelected?: boolean) => void;
+    receiveSegmentClickFromUnity?: (segmentName: string, isSelected?: boolean | string) => void;
   }
 }
 
@@ -55,12 +55,17 @@ const UnityWebGLEmbed: React.FC<UnityWebGLEmbedProps> = ({
   // Setup Unity to React communication
   useEffect(() => {
     // Define the function that Unity will call
-    window.receiveSegmentClickFromUnity = (segmentName: string, isSelectedValue?: boolean) => {
+    window.receiveSegmentClickFromUnity = (segmentName: string, isSelectedValue?: boolean | string) => {
       console.log(`[React] From Unity: Segment='${segmentName}', Selected='${isSelectedValue}'`);
-      // Convert string to boolean if necessary
-      const isSelected = typeof isSelectedValue === 'boolean' ? isSelectedValue : 
-                         typeof isSelectedValue === 'string' ? isSelectedValue.toLowerCase() === 'true' : 
-                         false;
+      
+      // Handle different types of isSelectedValue properly
+      let isSelected = false;
+      
+      if (typeof isSelectedValue === 'boolean') {
+        isSelected = isSelectedValue;
+      } else if (typeof isSelectedValue === 'string') {
+        isSelected = isSelectedValue.toLowerCase() === 'true';
+      }
       
       if (onSegmentClick) {
         onSegmentClick(segmentName, isSelected);
