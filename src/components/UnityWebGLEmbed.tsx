@@ -72,20 +72,21 @@ const UnityWebGLEmbed: React.FC<UnityWebGLEmbedProps> = ({ onSegmentClick, class
     };
     
   //codigo agregado por google ai studio
-    useEffect(() => {
+    
   // Define la función que Unity llamará
-  window.receiveSegmentClickFromUnity = (segmentName, isSelectedStr) => {
-    console.log(`Unity llamó a receiveSegmentClickFromUnity: ${segmentName}, ${isSelectedStr}`);
-    if (onSegmentClick) { // onSegmentClick es una prop de tu componente React
-      onSegmentClick(segmentName);
-    }
-    // Ejemplo de cómo usar el toast:
-    const isSelected = isSelectedStr.toLowerCase() === 'true';
-    toast({
-      title: "Segmento Seleccionado desde Unity",
-      description: `Segmento: ${segmentName}, Estado: ${isSelected ? 'Seleccionado' : 'Deseleccionado'}`,
-    });
-  };
+  // useEffect(() => {
+  // window.receiveSegmentClickFromUnity = (segmentName, isSelectedStr) => {
+  //   console.log(`Unity llamó a receiveSegmentClickFromUnity: ${segmentName}, ${isSelectedStr}`);
+  //   if (onSegmentClick) { // onSegmentClick es una prop de tu componente React
+  //     onSegmentClick(segmentName);
+  //   }
+  //   // Ejemplo de cómo usar el toast:
+  //   const isSelected = isSelectedStr.toLowerCase() === 'true';
+  //   toast({
+  //     title: "Segmento Seleccionado desde Unity",
+  //     description: `Segmento: ${segmentName}, Estado: ${isSelected ? 'Seleccionado' : 'Deseleccionado'}`,
+  //   });
+  // };
 
   // Limpieza al desmontar el componente
   return () => {
