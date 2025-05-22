@@ -1,37 +1,36 @@
+
 // src/components/UnityWebGLEmbed.tsx
-import React, { useEffect, useRef } from 'react';
-import { toast } from "@/components/ui/use-toast"; // Ajusta esta ruta si es necesario
+import React, { useEffect, useRef, useState } from 'react';
+import { toast } from "@/hooks/use-toast"; // Corrected import path
 
 // --- Interfaz de Props ---
 interface UnityWebGLEmbedProps {
-  unityLoaderUrl: string; // URL al archivo ...loader.js o Unity.js
-  unityConfig: {
+  unityLoaderUrl?: string; // URL al archivo ...loader.js o Unity.js (optional)
+  unityConfig?: {
     dataUrl: string;
     frameworkUrl: string;
-    codeUrl: string; // Usualmente el archivo .wasm
-    streamingAssetsUrl?: string; // Opcional
+    codeUrl: string; 
+    streamingAssetsUrl?: string;
     companyName?: string;
     productName?: string;
     productVersion?: string;
-    // Puedes añadir más propiedades según tu plantilla de Unity
   };
-  onSegmentClick?: (segmentID: string, isSelectedStr: string) => void;
+  onSegmentClick?: (segmentID: string, isSelected: boolean) => void;
   className?: string;
-  width?: string;  // Por ejemplo "100%" o "800px"
-  height?: string; // Por ejemplo "100%" o "600px"
+  width?: string;
+  height?: string;
 }
 
 // --- Declaraciones Globales para Window ---
-// Esto le dice a TypeScript qué esperar en el objeto global `window`
 declare global {
   interface Window {
-    unityInstance?: any; // La instancia de Unity, una vez creada
-    createUnityInstance: ( // Función del cargador de Unity
+    unityInstance?: any;
+    createUnityInstance?: (
       canvasHtmlElement: HTMLCanvasElement,
-      config: UnityWebGLEmbedProps['unityConfig'], // Usa el tipo de la prop
+      config: any,
       onProgress?: (progress: number) => void
-    ) => Promise<any>; // Retorna una promesa que resuelve a la unityInstance
-    receiveSegmentClickFromUnity?: (segmentName: string, isSelectedStr: string) => void; // Tu callback
+    ) => Promise<any>;
+    receiveSegmentClickFromUnity?: (segmentName: string, isSelectedStr: string) => void;
   }
 }
 
@@ -42,145 +41,216 @@ const UnityWebGLEmbed: React.FC<UnityWebGLEmbedProps> = ({
   onSegmentClick,
   className = '',
   width = '100%',
-  height = '500px', // Un valor por defecto razonable
+  height = '500px',
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const unityInstanceRef = useRef<any>(null); // Para almacenar la instancia de Unity
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [loadingProgress, setLoadingProgress] = useState<number>(0);
+  const unityInstanceRef = useRef<any>(null);
 
-  // Hook para configurar la comunicación DESDE Unity HACIA React y la limpieza
+  // Setup Unity to React communication
   useEffect(() => {
-    // Define la función global que Unity llamará
-    window.receiveSegmentClickFromUnity = (segmentName, isSelectedStr) => {
-      console.log(`[React] Desde Unity: Segmento='${segmentName}', Seleccionado='${isSelectedStr}'`);
-      if (onSegmentClick) {
-        onSegmentClick(segmentName, isSelectedStr);
-      }
+    // Define the function that Unity will call
+    window.receiveSegmentClickFromUnity = (segmentName: string, isSelectedStr: string) => {
+      console.log(`[React] From Unity: Segment='${segmentName}', Selected='${isSelectedStr}'`);
       const isSelected = isSelectedStr.toLowerCase() === 'true';
+      
+      if (onSegmentClick) {
+        onSegmentClick(segmentName, isSelected);
+      }
+      
       toast({
-        title: "Interacción con Octágono 3D",
-        description: `Segmento: ${segmentName}, Estado: ${isSelected ? 'Seleccionado' : 'Deseleccionado'}`,
+        title: "Interaction with 3D Octagon",
+        description: `Segment: ${segmentName}, State: ${isSelected ? 'Selected' : 'Deselected'}`,
       });
     };
 
-    // Función de limpieza (se ejecuta cuando el componente se desmonta)
+    // Cleanup function
     return () => {
-      console.log("[React] Desmontando UnityWebGLEmbed. Limpiando...");
-      // Intenta cerrar la instancia de Unity
+      console.log("[React] Unmounting UnityWebGLEmbed. Cleaning up...");
+      
       if (unityInstanceRef.current && typeof unityInstanceRef.current.Quit === 'function') {
-        unityInstanceRef.current.Quit()
-          .then(() => {
-            console.log("[React] Instancia de Unity cerrada correctamente.");
-          })
-          .catch((err: Error) => {
-            console.error("[React] Error al cerrar la instancia de Unity:", err);
-          });
+        try {
+          unityInstanceRef.current.Quit();
+          console.log("[React] Unity instance closed successfully.");
+        } catch (err) {
+          console.error("[React] Error closing Unity instance:", err);
+        }
       }
-      // Elimina la función global y la referencia
+      
+      // Remove global function reference
       delete window.receiveSegmentClickFromUnity;
       unityInstanceRef.current = null;
     };
-  }, [onSegmentClick, toast]); // Dependencias: se re-ejecuta si estas cambian
+  }, [onSegmentClick]);
 
-  // Hook para cargar y crear la instancia de Unity
+  // Load and initialize Unity
   useEffect(() => {
-    if (!canvasRef.current) {
-      console.warn("[React] Canvas ref no está listo aún.");
-      return;
-    }
-    if (!unityLoaderUrl || !unityConfig || !unityConfig.codeUrl || !unityConfig.dataUrl || !unityConfig.frameworkUrl) {
-      console.error("[React] Faltan URLs de configuración esenciales para Unity (loader, config, code, data, framework).");
-      toast({ title: "Error de Configuración", description: "Faltan datos para cargar el componente 3D.", variant: "destructive" });
+    // Skip if necessary props are missing
+    if (!canvasRef.current || !unityLoaderUrl || !unityConfig) {
+      if (!unityLoaderUrl || !unityConfig) {
+        console.warn("[React] Missing Unity config properties - using placeholder view");
+      }
       return;
     }
 
+    setIsLoading(true);
     const canvasElement = canvasRef.current;
     let scriptElement: HTMLScriptElement | null = null;
 
-    const loadAndInitializeUnity = async () => {
-      // Prevenir múltiples cargas si ya existe una instancia
-      if (unityInstanceRef.current) {
-        console.log("[React] La instancia de Unity ya existe o se está cargando.");
-        return;
-      }
-
+    const loadUnity = async () => {
       try {
-        // Carga dinámica del script loader de Unity
-        console.log(`[React] Cargando script loader de Unity desde: ${unityLoaderUrl}`);
+        // Load Unity script dynamically
+        console.log(`[React] Loading Unity loader script from: ${unityLoaderUrl}`);
+        
+        // Create a script element
         scriptElement = document.createElement('script');
         scriptElement.src = unityLoaderUrl;
         scriptElement.async = true;
-
-        scriptElement.onload = async () => {
-          console.log("[React] Script loader de Unity cargado.");
-          if (typeof window.createUnityInstance === 'function') {
-            console.log("[React] Llamando a createUnityInstance...");
-            try {
-              const instance = await window.createUnityInstance(
-                canvasElement,
-                unityConfig,
-                (progress) => {
-                  console.log(`[React] Progreso de carga de Unity: ${Math.round(progress * 100)}%`);
-                  // Aquí podrías actualizar un estado para una barra de progreso visual
-                }
-              );
-              console.log("[React] Instancia de Unity creada exitosamente:", instance);
-              unityInstanceRef.current = instance; // Almacena la instancia
-            } catch (error) {
-              console.error("[React] Error al llamar a createUnityInstance:", error);
-              toast({ title: "Error de Inicialización", description: "No se pudo inicializar el componente 3D.", variant: "destructive" });
-            }
-          } else {
-            console.error("[React] `window.createUnityInstance` no está definido. El script loader de Unity no se cargó o no expuso la función correctamente.");
-            toast({ title: "Error Crítico", description: "Función de inicialización 3D no encontrada.", variant: "destructive" });
-          }
-        };
-
-        scriptElement.onerror = () => {
-          console.error(`[React] Error al cargar el script loader de Unity desde: ${unityLoaderUrl}`);
-          toast({ title: "Error de Carga de Script", description: "No se pudo obtener el script del componente 3D.", variant: "destructive" });
-        };
-
+        
+        // Handle script loading
+        const scriptLoadPromise = new Promise<void>((resolve, reject) => {
+          if (!scriptElement) return reject("Script element not created");
+          
+          scriptElement.onload = () => resolve();
+          scriptElement.onerror = () => reject(new Error("Failed to load Unity script"));
+        });
+        
+        // Add script to document
         document.body.appendChild(scriptElement);
+        
+        // Wait for script to load
+        await scriptLoadPromise;
+        console.log("[React] Unity loader script loaded");
+        
+        // Check if createUnityInstance is available
+        if (typeof window.createUnityInstance === 'function') {
+          console.log("[React] Creating Unity instance...");
+          
+          try {
+            // Create Unity instance
+            const instance = await window.createUnityInstance(
+              canvasElement,
+              unityConfig,
+              (progress: number) => {
+                console.log(`[React] Unity loading progress: ${Math.round(progress * 100)}%`);
+                setLoadingProgress(progress);
+              }
+            );
+            
+            console.log("[React] Unity instance created successfully");
+            unityInstanceRef.current = instance;
+            window.unityInstance = instance; // Store on window for debugging
+          } catch (error) {
+            console.error("[React] Error creating Unity instance:", error);
+            toast({ 
+              title: "Error", 
+              description: "Could not initialize 3D component", 
+              variant: "destructive" 
+            });
+          }
+        } else {
+          console.error("[React] window.createUnityInstance is not available after script load");
+          toast({ 
+            title: "Error", 
+            description: "3D component initialization failed", 
+            variant: "destructive" 
+          });
+        }
       } catch (error) {
-        console.error("[React] Error general en el proceso de carga de Unity:", error);
+        console.error("[React] Error in Unity loading process:", error);
+        toast({ 
+          title: "Error", 
+          description: "Failed to load 3D component", 
+          variant: "destructive" 
+        });
+      } finally {
+        setIsLoading(false);
       }
     };
 
-    loadAndInitializeUnity();
+    loadUnity();
 
-    // Función de limpieza para este useEffect (principalmente para el script si se desmonta antes de cargar)
+    // Cleanup function
     return () => {
       if (scriptElement && scriptElement.parentNode) {
-        console.log("[React] Removiendo script loader de Unity del DOM (limpieza de efecto de carga).");
         scriptElement.parentNode.removeChild(scriptElement);
       }
-      // La limpieza de la instancia de Unity se maneja en el primer useEffect
-      // pero si la instancia se estaba creando y el componente se desmonta,
-      // la promesa de createUnityInstance podría resolverse después,
-      // por lo que el primer useEffect intentará hacer Quit().
     };
-  }, [unityLoaderUrl, unityConfig]); // Dependencias: se re-ejecuta si estas cambian
+  }, [unityLoaderUrl, unityConfig]);
+
+  // If no Unity config is provided, show placeholder
+  if (!unityLoaderUrl || !unityConfig) {
+    return (
+      <div 
+        className={`unity-placeholder ${className}`}
+        style={{ 
+          width, 
+          height,
+          backgroundColor: '#2A2A2A',
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
+          color: 'white',
+          textAlign: 'center',
+          borderRadius: '8px',
+        }}
+      >
+        <div style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '16px' }}>
+          3D Octagon Viewer
+        </div>
+        <div style={{ fontSize: '14px', maxWidth: '80%' }}>
+          Please provide Unity WebGL build files to view the interactive 3D octagon
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div
       className={`unity-webgl-embed-container ${className}`}
-      style={{ width: width, height: height, position: 'relative' /* Para indicadores de carga absolutos */ }}
+      style={{ width, height, position: 'relative' }}
     >
       <canvas
         ref={canvasRef}
-        id="unity-canvas" // Útil para debug y si Unity lo requiere
-        style={{ width: '100%', height: '100%', display: 'block' }}
-        // Considera añadir un tabIndex si quieres que el canvas reciba foco para input de teclado
-        // tabIndex={0}
+        id="unity-canvas"
+        style={{ width: '100%', height: '100%', display: 'block', backgroundColor: '#2A2A2A', borderRadius: '8px' }}
       />
-      {/* 
-        Aquí podrías añadir un indicador de carga visual. Ejemplo:
-        {isLoading && (
-          <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', color: 'white' }}>
-            Cargando Octágono 3D... {Math.round(loadingProgress * 100)}%
+      
+      {isLoading && (
+        <div style={{ 
+          position: 'absolute', 
+          top: 0, 
+          left: 0, 
+          width: '100%', 
+          height: '100%', 
+          background: 'rgba(0,0,0,0.6)', 
+          display: 'flex', 
+          flexDirection: 'column',
+          justifyContent: 'center', 
+          alignItems: 'center', 
+          color: 'white',
+          borderRadius: '8px',
+        }}>
+          <div style={{ marginBottom: '12px' }}>Loading 3D Octagon</div>
+          <div style={{ 
+            width: '60%', 
+            height: '8px', 
+            backgroundColor: 'rgba(255,255,255,0.2)',
+            borderRadius: '4px',
+            overflow: 'hidden'
+          }}>
+            <div style={{ 
+              width: `${loadingProgress * 100}%`, 
+              height: '100%', 
+              backgroundColor: '#4CAF50',
+              transition: 'width 0.3s ease'
+            }} />
           </div>
-        )}
-      */}
+          <div style={{ marginTop: '8px' }}>{Math.round(loadingProgress * 100)}%</div>
+        </div>
+      )}
     </div>
   );
 };
