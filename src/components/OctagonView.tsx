@@ -63,7 +63,7 @@ const OctagonView = () => {
         <>
           <div className="w-full h-full flex items-center justify-center">
             <iframe 
-              src="https://play.unity.com/embed/8e6ce43a-9040-4a3a-8fd2-9b11b702f27d" 
+              src="https://play.unity.com/en/games/8e6ce43a-9040-4a3a-8fd2-9b11b702f27d/octagono" 
               width="100%" 
               height="100%" 
               style={{ maxWidth: '100%', maxHeight: '100%' }}
