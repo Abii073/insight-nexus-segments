@@ -101,6 +101,7 @@ const OctagonViewPage = () => {
               <div className="mt-6 p-4 bg-blue-50 rounded-md">
                 <p className="text-sm text-blue-800">
                   <strong>Tip:</strong> Click on any segment to explore detailed customer profiles and targeted recommendations.
+                  Use the 3D View button to see an interactive segmentation model.
                 </p>
               </div>
             </Card>

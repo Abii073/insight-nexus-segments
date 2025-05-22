@@ -3,6 +3,8 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from "@/hooks/use-toast";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
 // Map segment identifiers to our app's segment IDs
 const segmentMap: Record<string, string> = {
@@ -16,8 +18,24 @@ const segmentMap: Record<string, string> = {
   "Segment8": "at-risk"
 };
 
+const UnityPlayEmbed = () => (
+  <div className="w-full h-full">
+    <iframe
+      src="https://play.unity.com/en/games/8e6ce43a-9040-4a3a-8fd2-9b11b702f27d/octagono"
+      width="800"
+      height="600"
+      frameBorder="0"
+      scrolling="no"
+      allowFullScreen={true}
+      allow="autoplay; fullscreen; vr"
+      className="w-full h-full"
+    ></iframe>
+  </div>
+);
+
 const OctagonView = () => {
   const navigate = useNavigate();
+  const [open3DView, setOpen3DView] = useState(false);
   
   return (
     <div className="relative w-full h-[500px] bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl shadow-xl overflow-hidden">
@@ -34,6 +52,26 @@ const OctagonView = () => {
             Select a customer segment below to explore detailed profiles and insights.
           </AlertDescription>
         </Alert>
+        
+        <Dialog open={open3DView} onOpenChange={setOpen3DView}>
+          <DialogTrigger asChild>
+            <Button 
+              variant="outline" 
+              className="mt-4 bg-blue-600 hover:bg-blue-700 border-blue-500 text-white"
+            >
+              View 3D Interactive Model
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[850px] sm:h-[650px]">
+            <DialogHeader>
+              <DialogTitle>3D Customer Segmentation Model</DialogTitle>
+            </DialogHeader>
+            <div className="h-[550px] w-full">
+              <UnityPlayEmbed />
+            </div>
+          </DialogContent>
+        </Dialog>
+        
         <div className="mt-6 grid grid-cols-2 sm:grid-cols-4 gap-2 w-full max-w-xl">
           {Object.entries(segmentMap).map(([key, value]) => (
             <button
