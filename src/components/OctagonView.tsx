@@ -31,6 +31,21 @@ const OctagonView = () => {
     });
   };
 
+  // Setup the window event listener for Unity communication
+  React.useEffect(() => {
+    window.receiveSegmentClickFromUnity = (segmentName: string) => {
+      console.log(`Segment clicked: ${segmentName}`);
+      if (segmentMap[segmentName]) {
+        navigate(`/profiles/${segmentMap[segmentName]}`);
+      }
+    };
+    
+    return () => {
+      // Clean up
+      delete window.receiveSegmentClickFromUnity;
+    };
+  }, [navigate]);
+
   return (
     <div className="relative w-full h-[500px] bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl shadow-xl overflow-hidden">
       {hasError ? (
@@ -63,19 +78,19 @@ const OctagonView = () => {
         <>
           <div className="w-full h-full flex items-center justify-center">
             <iframe 
-              src="https://play.unity.com/en/games/8e6ce43a-9040-4a3a-8fd2-9b11b702f27d/octagono" 
+              src="https://play.unity.com/embed/8e6ce43a-9040-4a3a-8fd2-9b11b702f27d/octagono" 
               width="100%" 
               height="100%" 
-              style={{ maxWidth: '100%', maxHeight: '100%' }}
-              frameBorder="0"
+              style={{ maxWidth: '100%', maxHeight: '100%', border: 'none' }}
               onError={handleIframeError}
               title="3D Octagon Visualization"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
               allowFullScreen
-              className="rounded-xl"
+              className="rounded-xl z-10 pointer-events-auto"
+              loading="eager"
             ></iframe>
           </div>
-          <div className="absolute bottom-6 left-0 right-0 text-center text-white text-opacity-80 text-sm pointer-events-none">
+          <div className="absolute bottom-6 left-0 right-0 z-20 text-center text-white text-opacity-80 text-sm bg-black bg-opacity-30 py-1 pointer-events-none">
             Click on a segment to explore more
           </div>
         </>
@@ -83,5 +98,12 @@ const OctagonView = () => {
     </div>
   );
 };
+
+// Add this to allow Unity to call the function
+declare global {
+  interface Window {
+    receiveSegmentClickFromUnity?: (segmentName: string, isSelected?: boolean) => void;
+  }
+}
 
 export default OctagonView;
