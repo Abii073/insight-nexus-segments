@@ -3,9 +3,9 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { toast } from "@/hooks/use-toast"; // Corrected import path
 
-// --- Interfaz de Props ---
+// --- Interface Props ---
 interface UnityWebGLEmbedProps {
-  unityLoaderUrl?: string; // URL al archivo ...loader.js o Unity.js (optional)
+  unityLoaderUrl?: string;
   unityConfig?: {
     dataUrl: string;
     frameworkUrl: string;
@@ -16,12 +16,13 @@ interface UnityWebGLEmbedProps {
     productVersion?: string;
   };
   onSegmentClick?: (segmentID: string, isSelected: boolean) => void;
+  onError?: (error: string) => void;
   className?: string;
   width?: string;
   height?: string;
 }
 
-// --- Declaraciones Globales para Window ---
+// --- Global Declarations for Window ---
 declare global {
   interface Window {
     unityInstance?: any;
@@ -34,11 +35,12 @@ declare global {
   }
 }
 
-// --- El Componente Funcional ---
+// --- Functional Component ---
 const UnityWebGLEmbed: React.FC<UnityWebGLEmbedProps> = ({
   unityLoaderUrl,
   unityConfig,
   onSegmentClick,
+  onError,
   className = '',
   width = '100%',
   height = '500px',
@@ -47,6 +49,8 @@ const UnityWebGLEmbed: React.FC<UnityWebGLEmbedProps> = ({
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [loadingProgress, setLoadingProgress] = useState<number>(0);
   const unityInstanceRef = useRef<any>(null);
+  const [loadAttempts, setLoadAttempts] = useState<number>(0);
+  const maxAttempts = 2;
 
   // Setup Unity to React communication
   useEffect(() => {
@@ -100,6 +104,11 @@ const UnityWebGLEmbed: React.FC<UnityWebGLEmbedProps> = ({
 
     const loadUnity = async () => {
       try {
+        // Check for WebGL support first
+        if (!isWebGLSupported()) {
+          throw new Error("WebGL is not supported in this browser");
+        }
+        
         // Load Unity script dynamically
         console.log(`[React] Loading Unity loader script from: ${unityLoaderUrl}`);
         
@@ -119,8 +128,12 @@ const UnityWebGLEmbed: React.FC<UnityWebGLEmbedProps> = ({
         // Add script to document
         document.body.appendChild(scriptElement);
         
-        // Wait for script to load
-        await scriptLoadPromise;
+        // Wait for script to load with timeout
+        const timeoutPromise = new Promise<void>((_, reject) => {
+          setTimeout(() => reject(new Error("Unity script load timeout")), 15000);
+        });
+        
+        await Promise.race([scriptLoadPromise, timeoutPromise]);
         console.log("[React] Unity loader script loaded");
         
         // Check if createUnityInstance is available
@@ -128,8 +141,8 @@ const UnityWebGLEmbed: React.FC<UnityWebGLEmbedProps> = ({
           console.log("[React] Creating Unity instance...");
           
           try {
-            // Create Unity instance
-            const instance = await window.createUnityInstance(
+            // Create Unity instance with timeout
+            const instancePromise = window.createUnityInstance(
               canvasElement,
               unityConfig,
               (progress: number) => {
@@ -138,38 +151,68 @@ const UnityWebGLEmbed: React.FC<UnityWebGLEmbedProps> = ({
               }
             );
             
+            const timeoutInstancePromise = new Promise((_, reject) => {
+              setTimeout(() => reject(new Error("Unity instance creation timeout")), 30000);
+            });
+            
+            const instance = await Promise.race([instancePromise, timeoutInstancePromise]);
+            
             console.log("[React] Unity instance created successfully");
             unityInstanceRef.current = instance;
             window.unityInstance = instance; // Store on window for debugging
           } catch (error) {
             console.error("[React] Error creating Unity instance:", error);
-            toast({ 
-              title: "Error", 
-              description: "Could not initialize 3D component", 
-              variant: "destructive" 
-            });
+            throw error;
           }
         } else {
           console.error("[React] window.createUnityInstance is not available after script load");
+          throw new Error("Unity loader did not provide createUnityInstance function");
+        }
+      } catch (error: any) {
+        console.error("[React] Error in Unity loading process:", error);
+        
+        // Try to reload if under max attempts
+        if (loadAttempts < maxAttempts) {
+          console.log(`[React] Attempt ${loadAttempts + 1}/${maxAttempts} - Retrying in 2 seconds...`);
+          setTimeout(() => {
+            setLoadAttempts(prevAttempts => prevAttempts + 1);
+            // Clean up failed script if it exists
+            if (scriptElement && scriptElement.parentNode) {
+              scriptElement.parentNode.removeChild(scriptElement);
+            }
+          }, 2000);
+        } else {
+          // Give up and show fallback
           toast({ 
             title: "Error", 
-            description: "3D component initialization failed", 
+            description: "Failed to load 3D component", 
             variant: "destructive" 
           });
+          
+          if (onError) {
+            onError(error.message || "Failed to load Unity WebGL");
+          }
         }
-      } catch (error) {
-        console.error("[React] Error in Unity loading process:", error);
-        toast({ 
-          title: "Error", 
-          description: "Failed to load 3D component", 
-          variant: "destructive" 
-        });
       } finally {
-        setIsLoading(false);
+        setIsLoading(loadAttempts >= maxAttempts ? false : true);
       }
     };
 
-    loadUnity();
+    // Helper function to check WebGL support
+    function isWebGLSupported() {
+      try {
+        const canvas = document.createElement('canvas');
+        return !!(window.WebGLRenderingContext && 
+          (canvas.getContext('webgl') || canvas.getContext('experimental-webgl')));
+      } catch (e) {
+        return false;
+      }
+    }
+
+    // Only load if we haven't exceeded max attempts
+    if (loadAttempts < maxAttempts) {
+      loadUnity();
+    }
 
     // Cleanup function
     return () => {
@@ -177,7 +220,7 @@ const UnityWebGLEmbed: React.FC<UnityWebGLEmbedProps> = ({
         scriptElement.parentNode.removeChild(scriptElement);
       }
     };
-  }, [unityLoaderUrl, unityConfig]);
+  }, [unityLoaderUrl, unityConfig, loadAttempts, onError]);
 
   // If no Unity config is provided, show placeholder
   if (!unityLoaderUrl || !unityConfig) {
