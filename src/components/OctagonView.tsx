@@ -1,7 +1,6 @@
 
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import UnityWebGLEmbed from './UnityWebGLEmbed';
 import { toast } from "@/hooks/use-toast";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 
@@ -17,55 +16,24 @@ const segmentMap: Record<string, string> = {
   "Segment8": "at-risk"
 };
 
-// Unity WebGL build configuration
-const unityConfig = {
-  // GitHub Pages URL to the Unity WebGL build - Updated with direct URLs
-  loaderUrl: "https://abii073.github.io/octagon/Build/octagon.loader.js",
-  config: {
-    dataUrl: "https://abii073.github.io/octagon/Build/octagon.data",
-    frameworkUrl: "https://abii073.github.io/octagon/Build/octagon.framework.js",
-    codeUrl: "https://abii073.github.io/octagon/Build/octagon.wasm",
-    streamingAssetsUrl: "https://abii073.github.io/octagon/StreamingAssets/",
-    companyName: "Octagon",
-    productName: "Octagon 3D",
-    productVersion: "1.0",
-  }
-};
-
 const OctagonView = () => {
   const navigate = useNavigate();
-  const [selectedSegment, setSelectedSegment] = useState<string | null>(null);
-  const [loadError, setLoadError] = useState<string | null>(null);
+  const [hasError, setHasError] = useState(false);
   
-  // Handle segment click from Unity
-  const handleSegmentClick = (segmentId: string, isSelected: boolean) => {
-    console.log(`Segment clicked: ${segmentId}, Selected: ${isSelected}`);
-    
-    // Only navigate if segment is selected
-    if (isSelected) {
-      // Map the Unity segment ID to our app's segment ID
-      const appSegmentId = segmentMap[segmentId] || segmentId;
-      setSelectedSegment(appSegmentId);
-      
-      // Navigate to the profile page for this segment
-      navigate(`/profiles/${appSegmentId}`);
-    }
-  };
-
-  // Handle Unity loading error
-  const handleUnityError = (error: string) => {
-    console.error("Unity loading error:", error);
-    setLoadError(error);
+  // Handle iframe loading error
+  const handleIframeError = () => {
+    console.error("Unity iframe failed to load");
+    setHasError(true);
     toast({
       title: "3D Octagon Error",
       description: "Could not load the interactive 3D element. Displaying fallback view.",
       variant: "destructive"
     });
   };
-  
+
   return (
     <div className="relative w-full h-[500px] bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl shadow-xl overflow-hidden">
-      {loadError ? (
+      {hasError ? (
         <div className="flex flex-col items-center justify-center h-full p-6 text-white">
           <div className="text-4xl font-bold mb-6">Octagon</div>
           <div className="mb-6">
@@ -93,14 +61,21 @@ const OctagonView = () => {
         </div>
       ) : (
         <>
-          <UnityWebGLEmbed 
-            unityLoaderUrl={unityConfig.loaderUrl}
-            unityConfig={unityConfig.config}
-            onSegmentClick={handleSegmentClick}
-            onError={handleUnityError}
-            className="w-full h-full"
-          />
-          <div className="absolute bottom-6 left-0 right-0 text-center text-white text-opacity-80 text-sm">
+          <div className="w-full h-full flex items-center justify-center">
+            <iframe 
+              src="https://play.unity.com/embed/8e6ce43a-9040-4a3a-8fd2-9b11b702f27d/octagono" 
+              width="100%" 
+              height="100%" 
+              style={{ maxWidth: '100%', maxHeight: '100%' }}
+              frameBorder="0"
+              onError={handleIframeError}
+              title="3D Octagon Visualization"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              className="rounded-xl"
+            ></iframe>
+          </div>
+          <div className="absolute bottom-6 left-0 right-0 text-center text-white text-opacity-80 text-sm pointer-events-none">
             Click on a segment to explore more
           </div>
         </>
