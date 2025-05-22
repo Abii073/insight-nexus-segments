@@ -18,10 +18,10 @@ const segmentMap: Record<string, string> = {
   "Segment8": "at-risk"
 };
 
-const UnityPlayEmbed = () => (
+const WebGLEmbed = () => (
   <div className="w-full h-full">
     <iframe
-      src="https://play.unity.com/en/games/8e6ce43a-9040-4a3a-8fd2-9b11b702f27d/octagono"
+      src="https://abii073.github.io/New-folder/"
       width="800"
       height="600"
       frameBorder="0"
@@ -67,7 +67,7 @@ const OctagonView = () => {
               <DialogTitle>3D Customer Segmentation Model</DialogTitle>
             </DialogHeader>
             <div className="h-[75vh] w-full">
-              <UnityPlayEmbed />
+              <WebGLEmbed />
             </div>
           </DialogContent>
         </Dialog>
