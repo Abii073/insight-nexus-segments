@@ -33,7 +33,7 @@ const OctagonView = () => {
 
   // Setup the window event listener for Unity communication
   React.useEffect(() => {
-    window.receiveSegmentClickFromUnity = (segmentName: string) => {
+    window.receiveSegmentClickFromUnity = (segmentName: string, isSelected?: boolean) => {
       console.log(`Segment clicked: ${segmentName}`);
       if (segmentMap[segmentName]) {
         navigate(`/profiles/${segmentMap[segmentName]}`);
@@ -99,7 +99,7 @@ const OctagonView = () => {
   );
 };
 
-// Add this to allow Unity to call the function
+// Global declaration for Unity communication
 declare global {
   interface Window {
     receiveSegmentClickFromUnity?: (segmentName: string, isSelected?: boolean) => void;
