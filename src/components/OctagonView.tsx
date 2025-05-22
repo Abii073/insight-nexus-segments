@@ -62,11 +62,11 @@ const OctagonView = () => {
               View 3D Interactive Model
             </Button>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-[850px] sm:h-[650px]">
+          <DialogContent className="sm:max-w-[90vw] sm:max-h-[90vh] sm:h-[85vh] sm:w-[85vw]">
             <DialogHeader>
               <DialogTitle>3D Customer Segmentation Model</DialogTitle>
             </DialogHeader>
-            <div className="h-[550px] w-full">
+            <div className="h-[75vh] w-full">
               <UnityPlayEmbed />
             </div>
           </DialogContent>
