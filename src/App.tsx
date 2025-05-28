@@ -6,6 +6,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import LandingPage from "./pages/LandingPage";
+import InstitutionSelectionPage from "./pages/InstitutionSelectionPage";
+import AuthPage from "./pages/AuthPage";
 import LoadingScreen from "./components/LoadingScreen";
 import AttributeSelectionPage from "./pages/AttributeSelectionPage";
 import OctagonViewPage from "./pages/OctagonViewPage";
