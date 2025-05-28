@@ -21,7 +21,7 @@ const segmentMap: Record<string, string> = {
 const WebGLEmbed = () => (//
   <div className="w-full h-full">
     <iframe
-      src="https://github.com/Abii073/insight-nexus-segments/blob/2ad8aa3e7a7d453792dce605043359f08b1e506b/octagono.html"
+      src="https://abii073.github.io/insight-nexus-segments/octagono.html"
       width="800"
       height="600"
       frameBorder="0"
