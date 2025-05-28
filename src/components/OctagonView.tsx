@@ -22,13 +22,12 @@ const WebGLEmbed = () => (
   <div className="w-full h-full">
     <iframe
       frameBorder="0"
-      src="https://itch.io/embed-upload/13829085?color=333333"
+      src="https://683672be04cd50a34ab590dd--effervescent-faun-83fb85.netlify.app/"
       allowFullScreen={true}
       width="500"
       height="320"
       className="w-full h-full"
     >
-      <a href="https://abycosa73.itch.io/octagono">Play Octagono on itch.io</a>
     </iframe>
   </div>
 );
