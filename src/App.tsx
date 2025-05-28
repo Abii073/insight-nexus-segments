@@ -26,6 +26,8 @@ const App = () => (
         <AnimatePresence mode="wait">
           <Routes>
             <Route path="/" element={<LandingPage />} />
+            <Route path="/institutions" element={<InstitutionSelectionPage />} />
+            <Route path="/auth" element={<AuthPage />} />
             <Route path="/loading" element={<LoadingScreen />} />
             <Route path="/attributes" element={<AttributeSelectionPage />} />
             <Route path="/octagon" element={<OctagonViewPage />} />
