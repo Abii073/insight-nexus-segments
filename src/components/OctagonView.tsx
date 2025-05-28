@@ -62,7 +62,7 @@ const EmbeddedUnityModel = () => {
       ) : (
         <iframe
           frameBorder="0"
-          src="https://itch.io/embed-upload/13829085?color=333333"
+          src="https://683672be04cd50a34ab590dd--effervescent-faun-83fb85.netlify.app/"
           allowFullScreen={true}
           width="100%"
           height="100%"
