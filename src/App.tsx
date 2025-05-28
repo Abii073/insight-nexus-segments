@@ -8,6 +8,7 @@ import { AnimatePresence } from "framer-motion";
 import LandingPage from "./pages/LandingPage";
 import InstitutionSelectionPage from "./pages/InstitutionSelectionPage";
 import AuthPage from "./pages/AuthPage";
+import DataIntegrationHub from "./pages/DataIntegrationHub";
 import LoadingScreen from "./components/LoadingScreen";
 import AttributeSelectionPage from "./pages/AttributeSelectionPage";
 import OctagonViewPage from "./pages/OctagonViewPage";
@@ -28,6 +29,7 @@ const App = () => (
             <Route path="/" element={<LandingPage />} />
             <Route path="/institutions" element={<InstitutionSelectionPage />} />
             <Route path="/auth" element={<AuthPage />} />
+            <Route path="/data-integration" element={<DataIntegrationHub />} />
             <Route path="/loading" element={<LoadingScreen />} />
             <Route path="/attributes" element={<AttributeSelectionPage />} />
             <Route path="/octagon" element={<OctagonViewPage />} />

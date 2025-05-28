@@ -56,7 +56,7 @@ const AuthPage = () => {
       if (isDemo) {
         if (email === 'demo@octagon.ai' && password === 'demo123') {
           toast.success("Demo authentication successful!");
-          navigate('/loading');
+          navigate('/data-integration');
         } else {
           toast.error("Invalid demo credentials. Use demo@octagon.ai / demo123");
         }
@@ -64,7 +64,7 @@ const AuthPage = () => {
         // Simulate institutional authentication
         const institutionName = selectedInstitution ? institutionNames[selectedInstitution as keyof typeof institutionNames] : 'your institution';
         toast.success(`Authentication successful with ${institutionName}!`);
-        navigate('/loading');
+        navigate('/data-integration');
       }
     } catch (error) {
       toast.error("Authentication failed. Please try again.");
