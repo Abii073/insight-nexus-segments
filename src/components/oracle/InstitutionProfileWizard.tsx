@@ -147,7 +147,7 @@ const InstitutionProfileWizard = ({ onComplete }: InstitutionProfileWizardProps)
                       <SelectValue placeholder="Select size" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="small">Small (< 1M customers)</SelectItem>
+                      <SelectItem value="small">Small (&lt; 1M customers)</SelectItem>
                       <SelectItem value="medium">Medium (1M - 10M customers)</SelectItem>
                       <SelectItem value="large">Large (10M+ customers)</SelectItem>
                       <SelectItem value="enterprise">Enterprise (50M+ customers)</SelectItem>
