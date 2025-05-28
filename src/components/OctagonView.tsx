@@ -18,7 +18,7 @@ const segmentMap: Record<string, string> = {
   "Segment8": "at-risk"
 };
 
-const WebGLEmbed = () => (//
+const WebGLEmbed = () => (
   <div className="w-full h-full">
     <iframe
       src="https://abii073.github.io/insight-nexus-segments/octagono.html"
