@@ -21,15 +21,15 @@ const segmentMap: Record<string, string> = {
 const WebGLEmbed = () => (
   <div className="w-full h-full">
     <iframe
-      src="https://abycosa73.itch.io/octagono"
-      width="800"
-      height="600"
       frameBorder="0"
-      scrolling="no"
+      src="https://itch.io/embed-upload/13829085?color=333333"
       allowFullScreen={true}
-      allow="autoplay; fullscreen; vr"
+      width="500"
+      height="320"
       className="w-full h-full"
-    ></iframe>
+    >
+      <a href="https://abycosa73.itch.io/octagono">Play Octagono on itch.io</a>
+    </iframe>
   </div>
 );
 
