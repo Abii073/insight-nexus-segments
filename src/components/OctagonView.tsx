@@ -1,23 +1,12 @@
 
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { toast } from "@/hooks/use-toast";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
-import { Skeleton } from "@/components/ui/skeleton";
 
-// Map segment identifiers to our app's segment IDs
-const segmentMap: Record<string, string> = {
-  "Segment1": "tech-savvy",
-  "Segment2": "conservative", 
-  "Segment3": "multichannel",
-  "Segment4": "value-seekers",
-  "Segment5": "luxury",
-  "Segment6": "occasional",
-  "Segment7": "loyal",
-  "Segment8": "at-risk"
-};
+interface OctagonViewProps {
+  selectedAttribute?: string;
+}
 
-const EmbeddedUnityModel = () => {
+const EmbeddedUnityModel = ({ selectedAttribute }: { selectedAttribute?: string }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
 
@@ -35,8 +24,8 @@ const EmbeddedUnityModel = () => {
       {isLoading && (
         <div className="absolute inset-0 flex items-center justify-center bg-gray-800 z-10">
           <div className="text-center text-white">
-            <div className="animate-spin w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full mx-auto mb-4"></div>
-            <p className="text-sm">Loading 3D Model...</p>
+            <div className="animate-spin w-8 h-8 border-4 border-brand-500 border-t-transparent rounded-full mx-auto mb-4"></div>
+            <p className="text-sm">Loading 3D Octagon Model...</p>
           </div>
         </div>
       )}
@@ -53,7 +42,7 @@ const EmbeddedUnityModel = () => {
                 setHasError(false);
                 setIsLoading(true);
               }}
-              className="mt-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded text-sm transition-colors"
+              className="mt-2 px-4 py-2 bg-brand-600 hover:bg-brand-700 rounded text-sm transition-colors"
             >
               Retry
             </button>
@@ -72,55 +61,37 @@ const EmbeddedUnityModel = () => {
           title="3D Customer Segmentation Octagon"
         />
       )}
+      
+      {selectedAttribute && !isLoading && !hasError && (
+        <div className="absolute bottom-4 left-4 bg-black/70 text-white px-3 py-1 rounded text-xs">
+          Highlighting: {selectedAttribute.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+        </div>
+      )}
     </div>
   );
 };
 
-const OctagonView = () => {
-  const navigate = useNavigate();
-  
+const OctagonView = ({ selectedAttribute }: OctagonViewProps) => {
   return (
-    <div className="relative w-full bg-gray-50 rounded-xl shadow-xl overflow-hidden">
-      <div className="p-6">
-        {/* Header */}
-        <div className="text-center mb-6">
-          <h2 className="text-3xl font-bold text-gray-800 mb-2">Customer Segmentation Octagon</h2>
-          <Alert className="bg-blue-50 border-blue-200 max-w-2xl mx-auto">
-            <AlertTitle className="text-blue-800">Interactive 3D Model</AlertTitle>
-            <AlertDescription className="text-blue-700">
-              Explore your customer segments in our interactive 3D visualization. Click the buttons below to highlight different segments.
+    <div className="relative w-full bg-gray-50 rounded-xl overflow-hidden">
+      <div className="p-4">
+        {/* Info Alert */}
+        <div className="mb-4">
+          <Alert className="bg-brand-50 border-brand-200">
+            <AlertTitle className="text-brand-800">Interactive 3D Attribute Model</AlertTitle>
+            <AlertDescription className="text-brand-700">
+              Explore the 8 key customer attributes in our interactive 3D octagon. Click the buttons below to highlight different attributes.
             </AlertDescription>
           </Alert>
         </div>
 
         {/* Embedded Unity Model */}
-        <div className="mb-6">
-          <EmbeddedUnityModel />
-        </div>
+        <EmbeddedUnityModel selectedAttribute={selectedAttribute} />
         
-        {/* Segment Navigation Buttons */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 max-w-4xl mx-auto">
-          {Object.entries(segmentMap).map(([key, value]) => (
-            <button
-              key={key}
-              onClick={() => {
-                navigate(`/profiles/${value}`);
-                toast({
-                  title: "Loading Profile",
-                  description: `Viewing ${value.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')} segment profile`,
-                });
-              }}
-              className="py-3 px-4 bg-white hover:bg-blue-50 border border-gray-200 hover:border-blue-300 rounded-lg text-sm font-medium text-gray-700 hover:text-blue-700 transition-all duration-200 shadow-sm hover:shadow-md transform hover:-translate-y-0.5"
-            >
-              {value.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
-            </button>
-          ))}
-        </div>
-
         {/* Additional Info */}
-        <div className="mt-6 text-center">
+        <div className="mt-4 text-center">
           <p className="text-sm text-gray-600">
-            Click any segment button above to explore detailed customer profiles and targeted marketing strategies.
+            Each side of the octagon represents a key customer attribute. Use the buttons below to explore different dimensions.
           </p>
         </div>
       </div>
