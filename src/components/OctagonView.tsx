@@ -51,7 +51,7 @@ const EmbeddedUnityModel = ({ selectedAttribute }: { selectedAttribute?: string 
       ) : (
         <iframe
           frameBorder="0"
-          src="https://683672be04cd50a34ab590dd--effervescent-faun-83fb85.netlify.app/"
+          src="https://6839051051d0806a83d68b6e--rococo-llama-238af9.netlify.app/"
           allowFullScreen={true}
           width="100%"
           height="100%"
