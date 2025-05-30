@@ -20,7 +20,7 @@ const EmbeddedUnityModel = ({ selectedAttribute }: { selectedAttribute?: string 
   };
 
   return (
-    <div className="relative w-full h-80 bg-gradient-to-br from-gray-800 to-gray-900 rounded-lg overflow-hidden">
+    <div className="relative w-full h-96 bg-gradient-to-br from-gray-800 to-gray-900 rounded-lg overflow-hidden">
       {isLoading && (
         <div className="absolute inset-0 flex items-center justify-center bg-gray-800 z-10">
           <div className="text-center text-white">
