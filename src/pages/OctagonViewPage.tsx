@@ -110,7 +110,7 @@ const OctagonViewPage = () => {
               {/* --- 2. PASAR LA URL DE NETLIFY Y EL CALLBACK A OctagonView --- */}
               <OctagonView
                 selectedAttribute={selectedAttribute.id}
-                unityModelUrl="https://6839051051d0806a83d68b6e--rococo-llama-238af9.netlify.app/" // <<-- TU URL DE NETLIFY AQUÍ
+                unityModelUrl="https://683a5f4a466de31ddd630187--calm-panda-882e4d.netlify.app/" // <<-- TU URL DE NETLIFY AQUÍ
                 onOctagonSegmentClicked={handleUnitySegmentClicked} // <<-- TU FUNCIÓN DE CALLBACK AQUÍ
               />
             </div>
