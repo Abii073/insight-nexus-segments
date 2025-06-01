@@ -12,15 +12,6 @@ export interface EmbeddedUnityModelProps {
   height?: string;
 }
 
-// --- GLOBAL WINDOW DECLARATION ---
-declare global {
-  interface Window {
-    handleOctagonSegmentClick?: (segmentId: string, isSelectedString: string) => void;
-    createUnityInstance?: (...args: any[]) => Promise<any>;
-    unityInstance?: any;
-  }
-}
-
 // --- EMBEDDED UNITY MODEL COMPONENT ---
 const EmbeddedUnityModel: React.FC<EmbeddedUnityModelProps> = ({
   selectedAttribute,
@@ -43,40 +34,28 @@ const EmbeddedUnityModel: React.FC<EmbeddedUnityModelProps> = ({
     setIsLoading(false);
     console.log("[WebApp] Unity iframe content loaded (iframe onload).");
     
-    // Attempt to get Unity instance and pass it to parent
-    setTimeout(() => {
-      try {
-        const iframe = iframeRef.current;
-        let unityInstance = null;
-        
-        // Try to get Unity instance from iframe's content window
-        if (iframe?.contentWindow) {
-          unityInstance = (iframe.contentWindow as any).unityInstance;
-        }
-        
-        // Fallback: try to get from global window
-        if (!unityInstance && window.unityInstance) {
-          unityInstance = window.unityInstance;
-        }
-        
-        if (unityInstance && onUnityInstanceLoaded) {
-          console.log("[WebApp] Unity instance found, passing to parent.");
-          onUnityInstanceLoaded(unityInstance);
+    // Create a proxy Unity instance for React -> Unity communication
+    const unityInstanceProxy = {
+      SendMessage: (gameObject: string, methodName: string, value: string) => {
+        console.log(`[WebApp] Sending message to Unity: ${gameObject}.${methodName}(${value})`);
+        if (iframeRef.current?.contentWindow) {
+          iframeRef.current.contentWindow.postMessage({
+            type: 'REACT_TO_UNITY',
+            gameObject: gameObject,
+            methodName: methodName,
+            value: value
+          }, '*');
         } else {
-          console.warn("[WebApp] Unity instance not found yet, will retry...");
-          // Retry after a longer delay
-          setTimeout(() => {
-            const retryInstance = iframe?.contentWindow ? (iframe.contentWindow as any).unityInstance : window.unityInstance;
-            if (retryInstance && onUnityInstanceLoaded) {
-              console.log("[WebApp] Unity instance found on retry, passing to parent.");
-              onUnityInstanceLoaded(retryInstance);
-            }
-          }, 2000);
+          console.warn("[WebApp] Cannot send message to Unity - iframe contentWindow not available");
         }
-      } catch (error) {
-        console.error("[WebApp] Error getting Unity instance:", error);
       }
-    }, 1000); // Give Unity time to initialize
+    };
+    
+    // Pass the proxy instance to parent
+    if (onUnityInstanceLoaded) {
+      console.log("[WebApp] Passing Unity instance proxy to parent.");
+      onUnityInstanceLoaded(unityInstanceProxy);
+    }
   }, [onUnityInstanceLoaded]);
 
   // Handle iframe load error
@@ -86,25 +65,34 @@ const EmbeddedUnityModel: React.FC<EmbeddedUnityModelProps> = ({
     console.error("[WebApp] Error loading Unity iframe.");
   }, []);
 
-  // Set up Unity -> React communication
+  // Set up Unity -> React communication using postMessage
   useEffect(() => {
-    console.log("[WebApp] Setting up handleOctagonSegmentClick on window.");
+    console.log("[WebApp] Setting up postMessage listener for Unity -> React communication.");
     
-    window.handleOctagonSegmentClick = (segmentId: string, isSelectedString: string) => {
-      console.log(`[WebApp] Received from Unity iframe: Segment='${segmentId}', Selected='${isSelectedString}'`);
-      const isSelected = isSelectedString.toLowerCase() === 'true';
-
-      if (onUnitySegmentClicked) {
-        console.log("[WebApp] Calling onUnitySegmentClicked with:", segmentId, isSelected);
-        onUnitySegmentClicked(segmentId, isSelected);
-      } else {
-        console.warn("[WebApp] onUnitySegmentClicked prop not provided.");
+    const handleMessage = (event: MessageEvent) => {
+      // For security, you might want to check event.origin here
+      console.log("[WebApp] Received postMessage:", event.data);
+      
+      if (event.data.type === 'UNITY_SEGMENT_CLICK') {
+        const { segmentId, isSelected } = event.data;
+        console.log(`[WebApp] Unity segment click: Segment='${segmentId}', Selected='${isSelected}'`);
+        
+        const isSelectedBool = isSelected === 'true' || isSelected === true;
+        
+        if (onUnitySegmentClicked) {
+          console.log("[WebApp] Calling onUnitySegmentClicked with:", segmentId, isSelectedBool);
+          onUnitySegmentClicked(segmentId, isSelectedBool);
+        } else {
+          console.warn("[WebApp] onUnitySegmentClicked prop not provided.");
+        }
       }
     };
 
+    window.addEventListener('message', handleMessage);
+
     return () => {
-      console.log("[WebApp] Cleaning up handleOctagonSegmentClick from window.");
-      delete window.handleOctagonSegmentClick;
+      console.log("[WebApp] Cleaning up postMessage listener.");
+      window.removeEventListener('message', handleMessage);
     };
   }, [onUnitySegmentClicked]);
 

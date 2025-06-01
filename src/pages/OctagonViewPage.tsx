@@ -160,7 +160,7 @@ const OctagonViewPage = () => {
               {/* Enhanced OctagonView with two-way communication */}
               <OctagonView
                 selectedAttribute={selectedAttribute.id}
-                unityModelUrl="https://683a5f4a466de31ddd630187--calm-panda-882e4d.netlify.app/"
+                unityModelUrl="https://eloquent-lokum-c9f203.netlify.app/"
                 onOctagonSegmentClicked={handleUnitySegmentClickedByUnity}
                 onUnityInstanceLoaded={handleUnityInstanceLoaded}
                 height="500px"
