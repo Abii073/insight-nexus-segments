@@ -1,103 +1,124 @@
-// src/components/EmbeddedUnityModel.tsx
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-// Asegúrate de tener la importación de toast si la usas, o coméntala/elimínala
-// import { useToast } from "@/components/ui/use-toast";
 
-// --- INTERFACES Y TIPOS ---
-export interface EmbeddedUnityModelProps { // Exportar la interfaz para que OctagonView pueda usarla
+// --- INTERFACES AND TYPES ---
+export interface EmbeddedUnityModelProps {
   selectedAttribute?: string;
   unitySrcUrl: string;
   onUnitySegmentClicked?: (segmentId: string, isSelected: boolean) => void;
-  className?: string; // Para permitir estilos adicionales desde el padre
+  onUnityInstanceLoaded?: (instance: any) => void;
+  className?: string;
   width?: string;
   height?: string;
 }
 
-// --- DECLARACIÓN GLOBAL PARA WINDOW ---
-// Esto ya debería estar en un archivo de tipos global (ej. global.d.ts o similar)
-// o puedes dejarlo aquí si es específico para este componente y sus padres.
-// Si ya lo tienes en otro lado, puedes quitar este bloque de aquí.
+// --- GLOBAL WINDOW DECLARATION ---
 declare global {
   interface Window {
     handleOctagonSegmentClick?: (segmentId: string, isSelectedString: string) => void;
-    // Si tu cargador de Unity usa createUnityInstance y unityInstance, también deberían estar aquí:
-    // createUnityInstance?: (...args: any[]) => Promise<any>;
-    // unityInstance?: any;
+    createUnityInstance?: (...args: any[]) => Promise<any>;
+    unityInstance?: any;
   }
 }
 
-// --- COMPONENTE EMBEDDED UNITY MODEL ---
+// --- EMBEDDED UNITY MODEL COMPONENT ---
 const EmbeddedUnityModel: React.FC<EmbeddedUnityModelProps> = ({
   selectedAttribute,
   unitySrcUrl,
   onUnitySegmentClicked,
+  onUnityInstanceLoaded,
   className = '',
   width = '100%',
-  height = '384px', // h-96 de Tailwind
+  height = '384px',
 }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
-  // const { toast } = useToast();
+  const [iframeKey, setIframeKey] = useState('iframe-initial-load');
+  const iframeRef = useRef<HTMLIFrameElement>(null);
 
-  console.log("[WebApp] EmbeddedUnityModel está renderizando/montando."); // Log de montaje
+  console.log("[WebApp] EmbeddedUnityModel is mounting/rendering.");
 
+  // Handle iframe load success
   const handleLoad = useCallback(() => {
     setIsLoading(false);
-    console.log("[WebApp] Contenido de iframe Unity cargado (iframe onload).");
-  }, []);
+    console.log("[WebApp] Unity iframe content loaded (iframe onload).");
+    
+    // Attempt to get Unity instance and pass it to parent
+    setTimeout(() => {
+      try {
+        const iframe = iframeRef.current;
+        let unityInstance = null;
+        
+        // Try to get Unity instance from iframe's content window
+        if (iframe?.contentWindow) {
+          unityInstance = (iframe.contentWindow as any).unityInstance;
+        }
+        
+        // Fallback: try to get from global window
+        if (!unityInstance && window.unityInstance) {
+          unityInstance = window.unityInstance;
+        }
+        
+        if (unityInstance && onUnityInstanceLoaded) {
+          console.log("[WebApp] Unity instance found, passing to parent.");
+          onUnityInstanceLoaded(unityInstance);
+        } else {
+          console.warn("[WebApp] Unity instance not found yet, will retry...");
+          // Retry after a longer delay
+          setTimeout(() => {
+            const retryInstance = iframe?.contentWindow ? (iframe.contentWindow as any).unityInstance : window.unityInstance;
+            if (retryInstance && onUnityInstanceLoaded) {
+              console.log("[WebApp] Unity instance found on retry, passing to parent.");
+              onUnityInstanceLoaded(retryInstance);
+            }
+          }, 2000);
+        }
+      } catch (error) {
+        console.error("[WebApp] Error getting Unity instance:", error);
+      }
+    }, 1000); // Give Unity time to initialize
+  }, [onUnityInstanceLoaded]);
 
+  // Handle iframe load error
   const handleError = useCallback(() => {
     setIsLoading(false);
     setHasError(true);
-    console.error("[WebApp] Error al cargar el iframe de Unity.");
-    // toast({
-    //   title: "Error de Carga",
-    //   description: "No se pudo cargar el modelo 3D interactivo.",
-    //   variant: "destructive",
-    // });
-  }, [/* toast */]);
+    console.error("[WebApp] Error loading Unity iframe.");
+  }, []);
 
+  // Set up Unity -> React communication
   useEffect(() => {
-    console.log("[WebApp] Asignando handleOctagonSegmentClick a window.");
+    console.log("[WebApp] Setting up handleOctagonSegmentClick on window.");
+    
     window.handleOctagonSegmentClick = (segmentId: string, isSelectedString: string) => {
-      console.log(`[WebApp] Recibido desde iframe (Unity): Segmento='${segmentId}', Seleccionado='${isSelectedString}'`);
+      console.log(`[WebApp] Received from Unity iframe: Segment='${segmentId}', Selected='${isSelectedString}'`);
       const isSelected = isSelectedString.toLowerCase() === 'true';
 
       if (onUnitySegmentClicked) {
-        console.log("[WebApp] Llamando a onUnitySegmentClicked con:", segmentId, isSelected);
+        console.log("[WebApp] Calling onUnitySegmentClicked with:", segmentId, isSelected);
         onUnitySegmentClicked(segmentId, isSelected);
       } else {
-        console.warn("[WebApp] onUnitySegmentClicked no fue proporcionado como prop.");
+        console.warn("[WebApp] onUnitySegmentClicked prop not provided.");
       }
-
-      // toast({
-      //   title: "Interacción desde Octágono 3D",
-      //   description: `Segmento: ${segmentId}, Estado: ${isSelected ? 'Seleccionado' : 'Deseleccionado'}`,
-      // });
     };
 
     return () => {
-      console.log("[WebApp] Limpiando handleOctagonSegmentClick de window.");
+      console.log("[WebApp] Cleaning up handleOctagonSegmentClick from window.");
       delete window.handleOctagonSegmentClick;
     };
-  }, [onUnitySegmentClicked /*, toast*/]);
+  }, [onUnitySegmentClicked]);
 
+  // Retry loading the iframe
   const retryLoad = useCallback(() => {
     setHasError(false);
     setIsLoading(true);
-    console.log("[WebApp] Intentando recargar el modelo 3D...");
-    // Para forzar la recarga del iframe, cambia su key.
-    // Esto se hace estableciendo un estado que se usa en la key del iframe
-    // y cambiándolo aquí.
+    console.log("[WebApp] Retrying to load Unity 3D model...");
     setIframeKey(`iframe-retry-${Date.now()}`);
   }, []);
 
-  const [iframeKey, setIframeKey] = useState('iframe-initial-load');
-
-
   return (
     <div className={`relative ${className}`} style={{ width, height }}>
+      {/* Loading State */}
       {isLoading && (
         <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-800 bg-opacity-80 z-10 backdrop-blur-sm text-white p-4">
           <div className="animate-spin w-10 h-10 border-4 border-blue-500 border-t-transparent rounded-full mx-auto mb-4"></div>
@@ -106,6 +127,7 @@ const EmbeddedUnityModel: React.FC<EmbeddedUnityModelProps> = ({
         </div>
       )}
 
+      {/* Error State */}
       {hasError && !isLoading && (
         <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-800 bg-opacity-80 backdrop-blur-sm text-white p-4">
           <div className="text-center p-6 bg-slate-700 rounded-lg shadow-2xl">
@@ -124,22 +146,24 @@ const EmbeddedUnityModel: React.FC<EmbeddedUnityModelProps> = ({
         </div>
       )}
 
+      {/* Unity Iframe */}
       {!hasError && (
-          <iframe
-            key={iframeKey} // Clave para forzar la recreación al reintentar
-            frameBorder="0"
-            src={unitySrcUrl}
-            allowFullScreen={true}
-            width="100%"
-            height="100%"
-            className="w-full h-full" // Asegura que el iframe llene el div contenedor
-            onLoad={handleLoad}
-            onError={handleError}
-            title="3D Interactive Octagon Model"
-          />
-        )
-      }
+        <iframe
+          ref={iframeRef}
+          key={iframeKey}
+          frameBorder="0"
+          src={unitySrcUrl}
+          allowFullScreen={true}
+          width="100%"
+          height="100%"
+          className="w-full h-full"
+          onLoad={handleLoad}
+          onError={handleError}
+          title="3D Interactive Octagon Model"
+        />
+      )}
 
+      {/* Selected Attribute Indicator */}
       {selectedAttribute && !isLoading && !hasError && (
         <div className="absolute bottom-4 left-4 bg-black/80 text-white px-3 py-1.5 rounded-md text-xs shadow-lg backdrop-blur-sm">
           Highlighting: <span className="font-semibold">{selectedAttribute.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</span>

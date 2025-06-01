@@ -1,29 +1,27 @@
-// OctagonView.tsx
 
-import React from 'react'; // No necesitas useState, useEffect, etc. aquí si se movieron
+import React from 'react';
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
-// Importa el nuevo componente
-import EmbeddedUnityModel, { EmbeddedUnityModelProps } from './EmbeddedUnityModel'; // Ajusta la ruta si es necesario
+import EmbeddedUnityModel, { EmbeddedUnityModelProps } from './EmbeddedUnityModel';
 
-// Props para el componente OctagonView principal
-// Necesita extender o incluir las props que pasará a EmbeddedUnityModel
+// Props for the OctagonView component
 interface OctagonViewProps {
   selectedAttribute?: string;
+  unityModelUrl: string;
   onOctagonSegmentClicked?: (segmentId: string, isSelected: boolean) => void;
-  unityModelUrl: string; // URL del modelo de Unity
-  // Puedes añadir más props específicas de OctagonView si las necesitas
-  className?: string; // Para el div contenedor principal
-  height?: string; // Para la altura del EmbeddedUnityModel
-  width?: string; // Para el ancho del EmbeddedUnityModel
+  onUnityInstanceLoaded?: (instance: any) => void;
+  className?: string;
+  height?: string;
+  width?: string;
 }
 
 const OctagonView: React.FC<OctagonViewProps> = ({
   selectedAttribute,
-  onOctagonSegmentClicked,
   unityModelUrl,
+  onOctagonSegmentClicked,
+  onUnityInstanceLoaded,
   className = '',
-  width = "100%", // Valor por defecto para el ancho del modelo embebido
-  height = "384px", // Valor por defecto para la altura (h-96)
+  width = "100%",
+  height = "500px", // Increased default height
 }) => {
   return (
     <div className={`relative w-full bg-slate-50 dark:bg-slate-800/50 rounded-xl overflow-hidden shadow-lg border border-slate-200 dark:border-slate-700 ${className}`}>
@@ -42,14 +40,14 @@ const OctagonView: React.FC<OctagonViewProps> = ({
           </Alert>
         </div>
 
-        {/* Usar el componente EmbeddedUnityModel importado */}
+        {/* Use the new EmbeddedUnityModel component */}
         <EmbeddedUnityModel
           selectedAttribute={selectedAttribute}
           unitySrcUrl={unityModelUrl}
           onUnitySegmentClicked={onOctagonSegmentClicked}
-          width={width}   // Pasa las props de tamaño
-          height={height} // Pasa las props de tamaño
-          // className="h-96" // o puedes pasar una clase específica para el contenedor interno si lo necesitas
+          onUnityInstanceLoaded={onUnityInstanceLoaded}
+          width={width}
+          height={height}
         />
 
         <div className="mt-4 sm:mt-6 text-center">

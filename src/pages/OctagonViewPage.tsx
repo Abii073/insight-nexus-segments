@@ -1,15 +1,15 @@
-import React, { useState, useEffect } from 'react'; // Asegúrate de importar useEffect
+import React, { useState, useRef, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import Logo from '../components/Logo'; // Asumo que la ruta es correcta
-import OctagonView from '../components/OctagonView'; // Asumo que la ruta es correcta
+import Logo from '../components/Logo';
+import OctagonView from '../components/OctagonView';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
-// Tu array de 'attributes' permanece igual...
+// Attributes array with matching IDs for Unity communication
 const attributes = [
   {
-    id: 'financial-capacity', // Asegúrate que estos IDs coincidan con los `segmentIdentifier` que envías desde Unity
+    id: 'financial-capacity',
     name: 'Financial Capacity',
     description: 'Income level, debt-to-income ratio, and free cash flow patterns',
     overview: 'Your customer base shows diverse financial capacity ranging from high-income maximizers to budget-conscious planners. 40% demonstrate strong disposable income with low debt ratios.',
@@ -22,9 +22,43 @@ const attributes = [
     overview: 'Strong overall credit health with 65% of customers maintaining excellent scores above 750. Payment history shows consistent reliability across most segments.',
     segments: ['Prime Credit', 'Near-Prime', 'Credit Building']
   },
-  // ... (resto de tus atributos)
   {
-    id: 'wealth-indicators', // Ejemplo: este ID debe coincidir con el que Unity envía para este segmento
+    id: 'product-portfolio',
+    name: 'Product Portfolio',
+    description: 'Current product holdings, product usage patterns, and cross-selling opportunities',
+    overview: 'Diverse product adoption with 45% using multiple banking products. Strong opportunity for cross-selling investment and insurance products.',
+    segments: ['Multi-Product Users', 'Single-Product Focus', 'Growth Potential']
+  },
+  {
+    id: 'digital-engagement',
+    name: 'Digital Engagement',
+    description: 'App usage frequency, digital transaction percentage, and online behavior',
+    overview: 'High digital adoption with 70% primarily using mobile banking. Younger demographics drive digital-first interactions.',
+    segments: ['Digital Natives', 'Hybrid Users', 'Traditional Preference']
+  },
+  {
+    id: 'life-stage',
+    name: 'Life Stage',
+    description: 'Age demographics, family status, and major life events impact',
+    overview: 'Balanced distribution across life stages with growing millennial segment (35%). Life events strongly correlate with product needs.',
+    segments: ['Young Professionals', 'Established Families', 'Pre-Retirement']
+  },
+  {
+    id: 'relationship-tenure',
+    name: 'Relationship Tenure',
+    description: 'Years as customer, account stability, and loyalty indicators',
+    overview: 'Strong customer retention with average tenure of 8.5 years. Long-term customers show higher product adoption and profitability.',
+    segments: ['Legacy Loyalists', 'Established Customers', 'New Relationships']
+  },
+  {
+    id: 'transaction-behavior',
+    name: 'Transaction Behavior',
+    description: 'Spending patterns, deposit frequency, withdrawal habits, and seasonal trends',
+    overview: 'Consistent transaction patterns with 60% showing predictable monthly flows. Seasonal variations align with employment cycles.',
+    segments: ['High-Volume Transactors', 'Steady Savers', 'Variable Spenders']
+  },
+  {
+    id: 'wealth-indicators',
     name: 'Wealth Indicators',
     description: 'Investable assets, property ownership, and investment activity',
     overview: 'Growing wealth concentration with 25% holding significant investable assets. Property ownership correlates strongly with long-term banking relationships.',
@@ -32,48 +66,63 @@ const attributes = [
   }
 ];
 
-
 const OctagonViewPage = () => {
   const [selectedAttribute, setSelectedAttribute] = useState(attributes[0]);
   const navigate = useNavigate();
+  
+  // Unity instance reference for React -> Unity communication
+  const unityInstanceRef = useRef<any>(null);
 
-  const handleAttributeSelect = (attribute: typeof attributes[0]) => {
+  // Handle Unity instance loaded callback
+  const handleUnityInstanceLoaded = useCallback((instance: any) => {
+    console.log("[OctagonViewPage] Unity instance loaded and stored:", instance);
+    unityInstanceRef.current = instance;
+  }, []);
+
+  // Handle attribute selection from React buttons (React -> Unity)
+  const handleAttributeSelectByButton = useCallback((attribute: typeof attributes[0]) => {
+    console.log(`[OctagonViewPage] Attribute button clicked: '${attribute.name}' (ID: ${attribute.id})`);
+    
+    // Update React state
     setSelectedAttribute(attribute);
-    // Opcional: Si quieres que Unity también reaccione a estos botones, necesitarías una función
-    // para enviar un mensaje A Unity aquí, por ejemplo, para que la cámara de Unity se mueva.
-    // unityInstanceRef.current?.SendMessage('OctagonManager', 'SelectSegmentByName', attribute.id);
-  };
+    
+    // Send message to Unity to focus camera on the corresponding segment
+    if (unityInstanceRef.current) {
+      try {
+        console.log(`[OctagonViewPage] Sending SelectSegmentByName to Unity: '${attribute.id}'`);
+        unityInstanceRef.current.SendMessage("OctagonManager", "SelectSegmentByName", attribute.id);
+      } catch (error) {
+        console.error("[OctagonViewPage] Error sending message to Unity:", error);
+      }
+    } else {
+      console.warn("[OctagonViewPage] Unity instance not available yet. Message not sent.");
+    }
+  }, []);
 
-  const handleViewProfiles = () => {
-    navigate(`/profiles/${selectedAttribute.id}`);
-  };
+  // Handle segment clicks from Unity (Unity -> React)
+  const handleUnitySegmentClickedByUnity = useCallback((segmentIdFromUnity: string, isNowSelected: boolean) => {
+    console.log(`[OctagonViewPage] Received from Unity: Segment ID='${segmentIdFromUnity}', Selected=${isNowSelected}`);
 
-  // --- 1. FUNCIÓN DE CALLBACK PARA LOS CLICS DE UNITY ---
-  const handleUnitySegmentClicked = (segmentIdFromUnity: string, isNowSelected: boolean) => {
-    console.log(`[OctagonViewPage] Recibido desde Unity: Segmento ID='${segmentIdFromUnity}', Seleccionado=${isNowSelected}`);
-
-    // Encuentra el atributo correspondiente al ID recibido desde Unity
+    // Find the attribute corresponding to the ID received from Unity
     const clickedAttribute = attributes.find(attr => attr.id === segmentIdFromUnity);
 
     if (clickedAttribute) {
       if (isNowSelected) {
-        // Si el segmento fue SELECCIONADO en Unity, actualiza el estado aquí
+        // If the segment was SELECTED in Unity, update the React state
         setSelectedAttribute(clickedAttribute);
-        console.log(`[OctagonViewPage] Atributo '${clickedAttribute.name}' seleccionado vía Unity.`);
+        console.log(`[OctagonViewPage] Attribute '${clickedAttribute.name}' selected via Unity.`);
       } else {
-        // Si el segmento fue DESELECCIONADO en Unity, podrías:
-        // a) No hacer nada si quieres que la selección persista hasta otro clic en los botones/Unity.
-        // b) Si 'selectedAttribute.id' es el mismo que 'segmentIdFromUnity', podrías resetear a un estado por defecto
-        //    o al primer atributo, pero esto podría entrar en conflicto si tienes una lógica de "ninguno seleccionado".
-        //    Por ahora, lo más simple es que la selección en la UI se actualice solo cuando un nuevo atributo es *seleccionado*.
-        if (selectedAttribute.id === segmentIdFromUnity) {
-          console.log(`[OctagonViewPage] Atributo '${clickedAttribute.name}' deseleccionado en Unity. La UI no cambia el atributo activo a menos que otro sea seleccionado.`);
-        }
+        // If the segment was DESELECTED in Unity, we keep the current selection
+        // This prevents unwanted state resets when clicking other segments
+        console.log(`[OctagonViewPage] Attribute '${clickedAttribute.name}' deselected in Unity. Keeping current UI selection.`);
       }
     } else {
-      console.warn(`[OctagonViewPage] Atributo con ID '${segmentIdFromUnity}' no encontrado.`);
+      console.warn(`[OctagonViewPage] Attribute with ID '${segmentIdFromUnity}' not found in attributes array.`);
     }
-    // Aquí puedes añadir más lógica específica de tu aplicación basada en el clic de Unity
+  }, []);
+
+  const handleViewProfiles = () => {
+    navigate(`/profiles/${selectedAttribute.id}`);
   };
 
   return (
@@ -107,11 +156,14 @@ const OctagonViewPage = () => {
           >
             <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
               <h2 className="text-xl font-bold mb-4 text-center">Customer Segmentation Octagon</h2>
-              {/* --- 2. PASAR LA URL DE NETLIFY Y EL CALLBACK A OctagonView --- */}
+              
+              {/* Enhanced OctagonView with two-way communication */}
               <OctagonView
                 selectedAttribute={selectedAttribute.id}
-                unityModelUrl="https://683a5f4a466de31ddd630187--calm-panda-882e4d.netlify.app/" // <<-- TU URL DE NETLIFY AQUÍ
-                onOctagonSegmentClicked={handleUnitySegmentClicked} // <<-- TU FUNCIÓN DE CALLBACK AQUÍ
+                unityModelUrl="https://683a5f4a466de31ddd630187--calm-panda-882e4d.netlify.app/"
+                onOctagonSegmentClicked={handleUnitySegmentClickedByUnity}
+                onUnityInstanceLoaded={handleUnityInstanceLoaded}
+                height="500px"
               />
             </div>
             
@@ -119,7 +171,7 @@ const OctagonViewPage = () => {
               {attributes.map((attribute) => (
                 <Button
                   key={attribute.id}
-                  onClick={() => handleAttributeSelect(attribute)}
+                  onClick={() => handleAttributeSelectByButton(attribute)}
                   variant={selectedAttribute.id === attribute.id ? "default" : "outline"}
                   className={`p-3 h-auto text-xs ${
                     selectedAttribute.id === attribute.id 
