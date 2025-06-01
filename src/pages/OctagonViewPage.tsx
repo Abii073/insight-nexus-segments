@@ -6,6 +6,22 @@ import OctagonView from '../components/OctagonView';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
+
+
+const unityIdToAttributeIdMap: { [key: string]: string } = {
+  "Cylinder": "financial-capacity", // Asume que Cylinder (sin número) es el primero
+  "Cylinder (0)": "financial-capacity", // O si tus nombres son así
+  "Cylinder (1)": "credit-profile",
+  "Cylinder (2)": "product-portfolio",
+  "Cylinder (3)": "digital-engagement", // Este es el que fallaba en tu log
+  "Cylinder (4)": "life-stage",
+  "Cylinder (5)": "relationship-tenure",
+  "Cylinder (6)": "transaction-behavior",
+  "Cylinder (7)": "wealth-indicators",
+  // Añade más mapeos si los nombres de tus GameObjects en Unity son diferentes
+};
+
+
 // Attributes array with matching IDs for Unity communication
 const attributes = [
   {
@@ -103,23 +119,26 @@ const OctagonViewPage = () => {
   const handleUnitySegmentClickedByUnity = useCallback((segmentIdFromUnity: string, isNowSelected: boolean) => {
     console.log(`[OctagonViewPage] Received from Unity: Segment ID='${segmentIdFromUnity}', Selected=${isNowSelected}`);
 
-    // Find the attribute corresponding to the ID received from Unity
-    const clickedAttribute = attributes.find(attr => attr.id === segmentIdFromUnity);
+     // Traducir el ID de Unity al ID de atributo de React
+    const attributeId = unityIdToAttributeIdMap[segmentIdFromUnity] || segmentIdFromUnity; // Usa el original si no hay mapeo
+    console.log(`[OctagonViewPage] ID de atributo mapeado: '${attributeId}'`);
+
+    const clickedAttribute = attributes.find(attr => attr.id === attributeId);
+    console.log("[OctagonViewPage] Atributo encontrado:", clickedAttribute);
 
     if (clickedAttribute) {
       if (isNowSelected) {
-        // If the segment was SELECTED in Unity, update the React state
         setSelectedAttribute(clickedAttribute);
-        console.log(`[OctagonViewPage] Attribute '${clickedAttribute.name}' selected via Unity.`);
+        console.log(`[OctagonViewPage] Atributo '${clickedAttribute.name}' seleccionado vía Unity.`);
       } else {
-        // If the segment was DESELECTED in Unity, we keep the current selection
-        // This prevents unwanted state resets when clicking other segments
-        console.log(`[OctagonViewPage] Attribute '${clickedAttribute.name}' deselected in Unity. Keeping current UI selection.`);
+        if (selectedAttribute?.id === attributeId) { // Usar attributeId mapeado aquí también
+          console.log(`[OctagonViewPage] Atributo '${clickedAttribute.name}' deseleccionado en Unity.`);
+        }
       }
     } else {
-      console.warn(`[OctagonViewPage] Attribute with ID '${segmentIdFromUnity}' not found in attributes array.`);
+      console.warn(`[OctagonViewPage] Atributo con ID mapeado '${attributeId}' (original de Unity: '${segmentIdFromUnity}') no encontrado en attributes array.`);
     }
-  }, []);
+  }, [selectedAttribute]);
 
   const handleViewProfiles = () => {
     navigate(`/profiles/${selectedAttribute.id}`);
