@@ -69,30 +69,32 @@ const EmbeddedUnityModel: React.FC<EmbeddedUnityModelProps> = ({
   useEffect(() => {
     console.log("[WebApp] Setting up postMessage listener for Unity -> React communication.");
     
-    const handleMessage = (event: MessageEvent) => {
+    const handleMessageFromUnity = (event: MessageEvent) => {
       // For security, you might want to check event.origin here
       console.log("[WebApp] Received postMessage:", event.data);
       
-      if (event.data.type === 'UNITY_SEGMENT_CLICK') {
-        const { segmentId, isSelected } = event.data;
-        console.log(`[WebApp] Unity segment click: Segment='${segmentId}', Selected='${isSelected}'`);
+      const eventData = event.data;
+      
+      if (eventData && eventData.type === 'UNITY_SEGMENT_CLICK' && eventData.payload) {
+        const segmentIdFromPayload = eventData.payload.segmentId;
+        const isSelectedFromPayload = eventData.payload.isSelected; // This should already be a boolean
         
-        const isSelectedBool = isSelected === 'true' || isSelected === true;
+        console.log(`[WebApp EmbeddedUnityModel] Processing UNITY_SEGMENT_CLICK: Segment='${segmentIdFromPayload}', Selected='${isSelectedFromPayload}'`);
         
         if (onUnitySegmentClicked) {
-          console.log("[WebApp] Calling onUnitySegmentClicked with:", segmentId, isSelectedBool);
-          onUnitySegmentClicked(segmentId, isSelectedBool);
+          console.log("[WebApp] Calling onUnitySegmentClicked with:", segmentIdFromPayload, isSelectedFromPayload);
+          onUnitySegmentClicked(segmentIdFromPayload, isSelectedFromPayload);
         } else {
           console.warn("[WebApp] onUnitySegmentClicked prop not provided.");
         }
       }
     };
 
-    window.addEventListener('message', handleMessage);
+    window.addEventListener('message', handleMessageFromUnity);
 
     return () => {
       console.log("[WebApp] Cleaning up postMessage listener.");
-      window.removeEventListener('message', handleMessage);
+      window.removeEventListener('message', handleMessageFromUnity);
     };
   }, [onUnitySegmentClicked]);
 
