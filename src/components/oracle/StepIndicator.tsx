@@ -8,10 +8,9 @@ interface StepIndicatorProps {
 
 const StepIndicator = ({ currentStep }: StepIndicatorProps) => {
   const steps = [
-    { number: 1, title: 'Oracle Services Overview', description: 'Learn about integration capabilities' },
-    { number: 2, title: 'Institution Profile', description: 'Configure your institutional settings' },
-    { number: 3, title: 'Service Integration', description: 'Set up Oracle Cloud services' },
-    { number: 4, title: 'Classification Ready', description: 'Prepare for intelligent classification' }
+    { number: 1, title: 'Institution Profile', description: 'Configure your institutional settings' },
+    { number: 2, title: 'Service Integration', description: 'Set up Oracle Cloud services' },
+    { number: 3, title: 'NeuroSegment AI', description: 'Prepare intelligent classification' }
   ];
 
   return (

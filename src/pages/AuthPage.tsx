@@ -6,7 +6,6 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, Shield, Eye, EyeOff, CheckCircle } from 'lucide-react';
 import StepWrapper from '../components/onboarding/StepWrapper';
 
@@ -106,7 +105,7 @@ const AuthPage = () => {
           <h3 className="text-xl font-semibold text-gray-900 mb-2">
             Connected to {isDemo ? 'Demo Environment' : institutionNames[selectedInstitution as keyof typeof institutionNames] || 'Your Institution'}
           </h3>
-          <p className="text-gray-600">Proceeding to institution setup...</p>
+          <p className="text-gray-600">Proceeding to institution profile setup...</p>
         </div>
       </StepWrapper>
     );
