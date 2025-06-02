@@ -8,29 +8,23 @@ type LogoProps = {
 };
 
 const Logo = ({ size = 'md', className = '', showImage = true }: LogoProps) => {
-  const sizeClasses = {
-    sm: 'text-xl',
-    md: 'text-2xl',
-    lg: 'text-3xl'
+  const imageSize = {
+    sm: 'h-8',
+    md: 'h-12',
+    lg: 'h-16'
   };
 
-  const imageSize = {
-    sm: 'h-6',
-    md: 'h-8',
-    lg: 'h-10'
-  };
+  if (!showImage) {
+    return null;
+  }
 
   return (
-    <div className={`font-bold flex items-center ${sizeClasses[size]} ${className}`}>
-      {showImage && (
-        <img 
-          src="/lovable-uploads/1c3c3f58-cc02-44b3-aaa1-8b16ea033444.png" 
-          alt="Octagon Logo" 
-          className={`mr-2 ${imageSize[size]}`}
-        />
-      )}
-      <span className="text-gray-700">octagon</span>
-      <span className="text-brand-500">.</span>
+    <div className={`flex items-center ${className}`}>
+      <img 
+        src="/lovable-uploads/1c3c3f58-cc02-44b3-aaa1-8b16ea033444.png" 
+        alt="Enterprise Logo" 
+        className={`${imageSize[size]}`}
+      />
     </div>
   );
 };
