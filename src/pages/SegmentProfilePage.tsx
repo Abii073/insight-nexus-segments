@@ -1,19 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useParams, useNavigate } from 'react-router-dom';
-import Logo from '../components/Logo';
-import InteractiveRadarChart from '../components/InteractiveRadarChart';
-import CustomerSegmentCard from '../components/CustomerSegmentCard';
-import { Card } from "@/components/ui/card";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { ArrowLeft, Save, Download, BarChart3, Settings, Info, Zap } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
+import Logo from '../components/Logo';
+import MobileSegmentView from '../components/segments/MobileSegmentView';
+import DesktopSegmentView from '../components/segments/DesktopSegmentView';
+import SegmentCustomizationModal from '../components/segments/SegmentCustomizationModal';
 
 // Subdimensions for each octagon attribute
 const attributeSubdimensions = {
@@ -109,7 +103,6 @@ const SegmentProfilePage = () => {
   const [selectedPreset, setSelectedPreset] = useState('digital-first');
   const [segments, setSegments] = useState([]);
   const [defaultSegments, setDefaultSegments] = useState([]);
-  const [compareMode, setCompareMode] = useState(false);
   const [customTag, setCustomTag] = useState('');
   const [segmentTags, setSegmentTags] = useState({});
   const [isCustomizeOpen, setIsCustomizeOpen] = useState(false);
@@ -323,379 +316,53 @@ const SegmentProfilePage = () => {
             </p>
           </motion.div>
 
-          {/* Mobile/Tablet View */}
-          <div className="lg:hidden">
-            <Tabs defaultValue="radar" className="w-full">
-              <TabsList className="grid w-full grid-cols-3">
-                <TabsTrigger value="radar" className="flex items-center gap-2">
-                  <Zap className="w-4 h-4" />
-                  Radar
-                </TabsTrigger>
-                <TabsTrigger value="segments" className="flex items-center gap-2">
-                  <BarChart3 className="w-4 h-4" />
-                  Segments
-                </TabsTrigger>
-                <TabsTrigger value="summary" className="flex items-center gap-2">
-                  <Info className="w-4 h-4" />
-                  Summary
-                </TabsTrigger>
-              </TabsList>
-              
-              <TabsContent value="radar" className="mt-4">
-                <Card className="p-6">
-                  <div className="mb-4">
-                    <Select value={selectedPreset} onValueChange={handlePresetChange}>
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Select configuration preset" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {Object.entries(presetConfigurations).map(([key, label]) => (
-                          <SelectItem key={key} value={key}>{label}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <InteractiveRadarChart
-                    data={radarData}
-                    labels={subdimensions}
-                    onDataChange={handleRadarDataChange}
-                  />
-                </Card>
-              </TabsContent>
-              
-              <TabsContent value="segments" className="mt-4">
-                <div className="space-y-4">
-                  <div className="flex justify-between items-center">
-                    <Badge variant="secondary" className="flex items-center gap-1">
-                      <BarChart3 className="w-3 h-3" />
-                      {segments.length} profiles
-                    </Badge>
-                    <Dialog open={isCustomizeOpen} onOpenChange={setIsCustomizeOpen}>
-                      <DialogTrigger asChild>
-                        <Button variant="outline" size="sm">
-                          <Settings className="w-4 h-4 mr-2" />
-                          Customize
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent className="max-w-md">
-                        <DialogHeader>
-                          <DialogTitle>Segment Classification</DialogTitle>
-                        </DialogHeader>
-                        <div className="space-y-4 mt-4">
-                          {segments.map((segment) => (
-                            <div key={segment.name} className="space-y-2">
-                              <label className="text-sm font-medium text-gray-700">
-                                {segment.name}
-                              </label>
-                              <Select
-                                value={segmentTags[segment.name] || ''}
-                                onValueChange={(value) => handleTagSegment(segment.name, value)}
-                              >
-                                <SelectTrigger className="w-full">
-                                  <SelectValue placeholder="Assign tag..." />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  {availableTags.map((tag) => (
-                                    <SelectItem key={tag} value={tag}>{tag}</SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                            </div>
-                          ))}
-                        </div>
-                      </DialogContent>
-                    </Dialog>
-                  </div>
-                  
-                  {segments.map((segment, index) => (
-                    <motion.div
-                      key={segment.name}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ 
-                        opacity: 1, 
-                        y: 0,
-                        scale: highlightedCard ? 1.02 : 1
-                      }}
-                      transition={{ 
-                        delay: index * 0.1,
-                        scale: { duration: 0.3 }
-                      }}
-                      className={highlightedCard ? "animate-pulse" : ""}
-                    >
-                      <CustomerSegmentCard
-                        segment={{
-                          ...segment,
-                          name: `${segment.name} (${segment.percentage}%)`
-                        }}
-                        onViewCampaigns={() => handleViewCampaigns(segment.name)}
-                      />
-                    </motion.div>
-                  ))}
-                </div>
-              </TabsContent>
-              
-              <TabsContent value="summary" className="mt-4">
-                <Card className="p-6">
-                  <h3 className="text-lg font-bold mb-4">Impact Summary</h3>
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-2 mb-4">
-                      <Switch
-                        checked={compareMode}
-                        onCheckedChange={setCompareMode}
-                        id="compare-mode-mobile"
-                      />
-                      <label htmlFor="compare-mode-mobile" className="text-sm font-medium">
-                        Compare with Default
-                      </label>
-                    </div>
-                    
-                    <div className="space-y-2 text-sm">
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">Avg. Configuration</span>
-                        <span className="font-medium">{avgConfiguration}%</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">Segments Generated</span>
-                        <span className="font-medium">{segments.length}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">Tagged Segments</span>
-                        <span className="font-medium">{Object.keys(segmentTags).length}</span>
-                      </div>
-                    </div>
-                    
-                    <div className="flex gap-2 mt-4">
-                      <Button variant="outline" size="sm" onClick={handleSaveSegments} className="flex-1">
-                        <Save className="w-4 h-4 mr-2" />
-                        Save
-                      </Button>
-                      <Button variant="outline" size="sm" onClick={handleExportSegments} className="flex-1">
-                        <Download className="w-4 h-4 mr-2" />
-                        Export
-                      </Button>
-                    </div>
-                  </div>
-                </Card>
-              </TabsContent>
-            </Tabs>
-          </div>
+          {/* Mobile View */}
+          <MobileSegmentView
+            radarData={radarData}
+            subdimensions={subdimensions}
+            selectedPreset={selectedPreset}
+            segments={segments}
+            highlightedCard={highlightedCard}
+            presetConfigurations={presetConfigurations}
+            avgConfiguration={avgConfiguration}
+            segmentTags={segmentTags}
+            onRadarDataChange={handleRadarDataChange}
+            onPresetChange={handlePresetChange}
+            onViewCampaigns={handleViewCampaigns}
+            onCustomizeOpen={() => setIsCustomizeOpen(true)}
+            onSaveSegments={handleSaveSegments}
+            onExportSegments={handleExportSegments}
+          />
 
-          {/* Desktop View - Horizontal Layout */}
-          <div className="hidden lg:block">
-            <div className="grid grid-cols-12 gap-6 h-[calc(100vh-200px)]">
-              {/* Left Zone - Interactive Radar (30%) */}
-              <motion.div 
-                className="col-span-4"
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.3 }}
-              >
-                <Card className="p-6 h-full overflow-y-auto">
-                  <div className="flex justify-between items-center mb-4">
-                    <h2 className="text-xl font-bold flex items-center gap-2">
-                      <Zap className="w-5 h-5 text-blue-500" />
-                      Interactive Radar
-                    </h2>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Info className="w-4 h-4 text-gray-400 cursor-help" />
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>Adjust sliders to see real-time impact on segments</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </div>
-                  
-                  <div className="mb-4">
-                    <Select value={selectedPreset} onValueChange={handlePresetChange}>
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Select configuration preset" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {Object.entries(presetConfigurations).map(([key, label]) => (
-                          <SelectItem key={key} value={key}>{label}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  
-                  <InteractiveRadarChart
-                    data={radarData}
-                    labels={subdimensions}
-                    onDataChange={handleRadarDataChange}
-                  />
-                </Card>
-              </motion.div>
-              
-              {/* Center Zone - Live Generated Segments (45%) */}
-              <motion.div 
-                className="col-span-5"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3, delay: 0.1 }}
-              >
-                <Card className="p-6 h-full">
-                  <div className="flex justify-between items-center mb-4">
-                    <div className="flex items-center gap-3">
-                      <h3 className="text-lg font-semibold flex items-center gap-2">
-                        <BarChart3 className="w-5 h-5 text-green-500" />
-                        Live Segments
-                      </h3>
-                      <Badge variant="secondary" className="flex items-center gap-1">
-                        {segments.length} profiles
-                      </Badge>
-                    </div>
-                    
-                    <Dialog open={isCustomizeOpen} onOpenChange={setIsCustomizeOpen}>
-                      <DialogTrigger asChild>
-                        <Button variant="outline" size="sm">
-                          <Settings className="w-4 h-4 mr-2" />
-                          Customize
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent className="max-w-md">
-                        <DialogHeader>
-                          <DialogTitle>Segment Classification</DialogTitle>
-                        </DialogHeader>
-                        <div className="space-y-4 mt-4">
-                          {segments.map((segment) => (
-                            <div key={segment.name} className="space-y-2">
-                              <label className="text-sm font-medium text-gray-700">
-                                {segment.name}
-                              </label>
-                              <Select
-                                value={segmentTags[segment.name] || ''}
-                                onValueChange={(value) => handleTagSegment(segment.name, value)}
-                              >
-                                <SelectTrigger className="w-full">
-                                  <SelectValue placeholder="Assign tag..." />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  {availableTags.map((tag) => (
-                                    <SelectItem key={tag} value={tag}>{tag}</SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                            </div>
-                          ))}
-                          
-                          <div className="mt-4 pt-4 border-t">
-                            <label className="text-sm font-medium text-gray-700 mb-2 block">
-                              Custom Tag
-                            </label>
-                            <Input
-                              placeholder="Enter custom tag..."
-                              value={customTag}
-                              onChange={(e) => setCustomTag(e.target.value)}
-                            />
-                          </div>
-                        </div>
-                      </DialogContent>
-                    </Dialog>
-                  </div>
-                  
-                  <div className="overflow-y-auto h-[calc(100%-80px)] space-y-3">
-                    <AnimatePresence mode="wait">
-                      {segments.map((segment, index) => (
-                        <motion.div
-                          key={`${segment.name}-${highlightedCard}`}
-                          initial={{ opacity: 0, y: 20 }}
-                          animate={{ 
-                            opacity: 1, 
-                            y: 0,
-                            scale: highlightedCard ? 1.02 : 1
-                          }}
-                          exit={{ opacity: 0, y: -20 }}
-                          transition={{ 
-                            delay: index * 0.05,
-                            scale: { duration: 0.3 }
-                          }}
-                          className={highlightedCard ? "animate-pulse" : ""}
-                        >
-                          <CustomerSegmentCard
-                            segment={{
-                              ...segment,
-                              name: `${segment.name} (${segment.percentage}%)`
-                            }}
-                            onViewCampaigns={() => handleViewCampaigns(segment.name)}
-                          />
-                        </motion.div>
-                      ))}
-                    </AnimatePresence>
-                  </div>
-                </Card>
-              </motion.div>
-              
-              {/* Right Zone - Impact Summary (25%) */}
-              <motion.div
-                className="col-span-3"
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.3, delay: 0.2 }}
-              >
-                <Card className="p-6 h-full">
-                  <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
-                    <Info className="w-5 h-5 text-purple-500" />
-                    Impact Summary
-                  </h3>
-                  
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-2 mb-4">
-                      <Switch
-                        checked={compareMode}
-                        onCheckedChange={setCompareMode}
-                        id="compare-mode-desktop"
-                      />
-                      <label htmlFor="compare-mode-desktop" className="text-sm font-medium">
-                        Compare Mode
-                      </label>
-                    </div>
-                    
-                    <motion.div 
-                      className="space-y-3"
-                      animate={{ scale: highlightedCard ? 1.02 : 1 }}
-                      transition={{ duration: 0.3 }}
-                    >
-                      <div className="p-4 bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg">
-                        <div className="text-center">
-                          <div className="text-2xl font-bold text-blue-700">{avgConfiguration}%</div>
-                          <div className="text-xs text-blue-600">Avg Configuration</div>
-                        </div>
-                      </div>
-                      
-                      <div className="grid grid-cols-2 gap-2 text-sm">
-                        <div className="p-2 bg-gray-50 rounded text-center">
-                          <div className="font-bold text-gray-800">{segments.length}</div>
-                          <div className="text-xs text-gray-600">Segments</div>
-                        </div>
-                        <div className="p-2 bg-gray-50 rounded text-center">
-                          <div className="font-bold text-gray-800">{Object.keys(segmentTags).length}</div>
-                          <div className="text-xs text-gray-600">Tagged</div>
-                        </div>
-                      </div>
-                    </motion.div>
-                    
-                    <div className="space-y-2">
-                      <Button variant="outline" size="sm" onClick={handleSaveSegments} className="w-full">
-                        <Save className="w-4 h-4 mr-2" />
-                        Save Configuration
-                      </Button>
-                      <Button variant="outline" size="sm" onClick={handleExportSegments} className="w-full">
-                        <Download className="w-4 h-4 mr-2" />
-                        Export Data
-                      </Button>
-                    </div>
-                    
-                    <div className="p-4 bg-blue-50 rounded-md mt-6">
-                      <p className="text-sm text-blue-800">
-                        <strong>💡 Tip:</strong> Watch segments update in real-time as you adjust the radar. High-impact changes create visual feedback.
-                      </p>
-                    </div>
-                  </div>
-                </Card>
-              </motion.div>
-            </div>
-          </div>
+          {/* Desktop View */}
+          <DesktopSegmentView
+            radarData={radarData}
+            subdimensions={subdimensions}
+            selectedPreset={selectedPreset}
+            segments={segments}
+            highlightedCard={highlightedCard}
+            presetConfigurations={presetConfigurations}
+            avgConfiguration={avgConfiguration}
+            segmentTags={segmentTags}
+            onRadarDataChange={handleRadarDataChange}
+            onPresetChange={handlePresetChange}
+            onViewCampaigns={handleViewCampaigns}
+            onCustomizeOpen={() => setIsCustomizeOpen(true)}
+            onSaveSegments={handleSaveSegments}
+            onExportSegments={handleExportSegments}
+          />
+
+          {/* Segment Customization Modal */}
+          <SegmentCustomizationModal
+            isOpen={isCustomizeOpen}
+            onOpenChange={setIsCustomizeOpen}
+            segments={segments}
+            segmentTags={segmentTags}
+            customTag={customTag}
+            availableTags={availableTags}
+            onTagSegment={handleTagSegment}
+            onCustomTagChange={setCustomTag}
+          />
         </div>
       </div>
     </TooltipProvider>
