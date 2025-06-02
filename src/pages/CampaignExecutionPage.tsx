@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate, useSearchParams } from 'react-router-dom';
@@ -201,11 +200,9 @@ const CampaignExecutionPage = () => {
                     <div className="flex items-center justify-between mb-2">
                       <div className="text-sm font-medium text-blue-700">Open Rate</div>
                       <div className="flex items-center gap-1">
-                        {getTrendIcon(campaignData.metrics.openRate.trending) && (
-                          <getTrendIcon(campaignData.metrics.openRate.trending) 
-                            className={`w-4 h-4 ${getTrendColor(campaignData.metrics.openRate.trending)}`} 
-                          />
-                        )}
+                        {React.createElement(getTrendIcon(campaignData.metrics.openRate.trending), {
+                          className: `w-4 h-4 ${getTrendColor(campaignData.metrics.openRate.trending)}`
+                        })}
                         <span className={`text-xs ${getTrendColor(campaignData.metrics.openRate.trending)}`}>
                           {campaignData.metrics.openRate.trend > 0 ? '+' : ''}{campaignData.metrics.openRate.trend}%
                         </span>
@@ -218,11 +215,9 @@ const CampaignExecutionPage = () => {
                     <div className="flex items-center justify-between mb-2">
                       <div className="text-sm font-medium text-green-700">Click-Through Rate</div>
                       <div className="flex items-center gap-1">
-                        {getTrendIcon(campaignData.metrics.ctr.trending) && (
-                          <getTrendIcon(campaignData.metrics.ctr.trending) 
-                            className={`w-4 h-4 ${getTrendColor(campaignData.metrics.ctr.trending)}`} 
-                          />
-                        )}
+                        {React.createElement(getTrendIcon(campaignData.metrics.ctr.trending), {
+                          className: `w-4 h-4 ${getTrendColor(campaignData.metrics.ctr.trending)}`
+                        })}
                         <span className={`text-xs ${getTrendColor(campaignData.metrics.ctr.trending)}`}>
                           {campaignData.metrics.ctr.trend > 0 ? '+' : ''}{campaignData.metrics.ctr.trend}%
                         </span>
@@ -235,11 +230,9 @@ const CampaignExecutionPage = () => {
                     <div className="flex items-center justify-between mb-2">
                       <div className="text-sm font-medium text-purple-700">Conversion Rate</div>
                       <div className="flex items-center gap-1">
-                        {getTrendIcon(campaignData.metrics.conversionRate.trending) && (
-                          <getTrendIcon(campaignData.metrics.conversionRate.trending) 
-                            className={`w-4 h-4 ${getTrendColor(campaignData.metrics.conversionRate.trending)}`} 
-                          />
-                        )}
+                        {React.createElement(getTrendIcon(campaignData.metrics.conversionRate.trending), {
+                          className: `w-4 h-4 ${getTrendColor(campaignData.metrics.conversionRate.trending)}`
+                        })}
                         <span className={`text-xs ${getTrendColor(campaignData.metrics.conversionRate.trending)}`}>
                           {campaignData.metrics.conversionRate.trend > 0 ? '+' : ''}{campaignData.metrics.conversionRate.trend}%
                         </span>
