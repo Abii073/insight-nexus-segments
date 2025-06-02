@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -10,33 +9,33 @@ import { ArrowLeft, Building2, Shield, CheckCircle } from 'lucide-react';
 
 const institutions = [
   {
-    id: 'banamex',
-    name: 'Banamex',
-    logo: '🏦',
-    description: 'Grupo Financiero Banamex - Leading Mexican financial institution',
-    color: 'bg-red-50 border-red-200 hover:bg-red-100',
-    available: true
-  },
-  {
-    id: 'bbva',
-    name: 'BBVA México',
-    logo: '🏛️',
-    description: 'BBVA - Digital banking innovation leader',
-    color: 'bg-blue-50 border-blue-200 hover:bg-blue-100',
-    available: true
-  },
-  {
     id: 'banorte',
     name: 'Banorte',
-    logo: '🏢',
+    logo: '/lovable-uploads/b442d83e-3497-45e4-bd7d-1297586126b0.png',
     description: 'Grupo Financiero Banorte - Mexican banking excellence',
     color: 'bg-green-50 border-green-200 hover:bg-green-100',
     available: true
   },
   {
+    id: 'banamex',
+    name: 'Banamex',
+    logo: '/lovable-uploads/27f86398-e70f-4e7c-9eda-eee20b0d5ae8.png',
+    description: 'Grupo Financiero Banamex - Leading Mexican financial institution',
+    color: 'bg-red-50 border-red-200 hover:bg-red-100',
+    available: false
+  },
+  {
+    id: 'bbva',
+    name: 'BBVA México',
+    logo: '/lovable-uploads/440f6d8a-1fed-426b-b074-888719cb32ba.png',
+    description: 'BBVA - Digital banking innovation leader',
+    color: 'bg-blue-50 border-blue-200 hover:bg-blue-100',
+    available: false
+  },
+  {
     id: 'santander',
     name: 'Santander México',
-    logo: '🏪',
+    logo: '/lovable-uploads/6a68d80e-3bb7-4f5c-ab9b-02adac43c64b.png',
     description: 'Banco Santander - Global banking expertise',
     color: 'bg-orange-50 border-orange-200 hover:bg-orange-100',
     available: false
@@ -153,7 +152,13 @@ const InstitutionSelectionPage = () => {
                 >
                   <CardContent className="p-6">
                     <div className="flex items-start space-x-4">
-                      <div className="text-3xl">{institution.logo}</div>
+                      <div className="flex-shrink-0">
+                        <img 
+                          src={institution.logo} 
+                          alt={`${institution.name} logo`}
+                          className="h-12 w-auto object-contain"
+                        />
+                      </div>
                       <div className="flex-1">
                         <div className="flex items-center space-x-2 mb-2">
                           <h3 className="font-semibold text-gray-900">{institution.name}</h3>
