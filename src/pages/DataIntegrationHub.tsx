@@ -17,6 +17,16 @@ const DataIntegrationHub = () => {
   const [currentStep, setCurrentStep] = useState(1); // Start with Institution Profile
   const [showWizard, setShowWizard] = useState(true); // Show wizard immediately
   const [institutionProfile, setInstitutionProfile] = useState(null);
+  
+  // Check if we have a stored institution in sessionStorage
+  const selectedInstitution = sessionStorage.getItem('selectedInstitution') || '';
+  
+  // Pre-filled data for Banorte
+  const prefilledData = selectedInstitution === 'banorte' ? {
+    institutionName: 'Banorte',
+    institutionType: 'commercial-bank',
+    institutionSize: 'large'
+  } : undefined;
 
   const handleProfileComplete = (profile: any) => {
     setInstitutionProfile(profile);
@@ -26,7 +36,7 @@ const DataIntegrationHub = () => {
 
   const handleSetupComplete = () => {
     setCurrentStep(3); // Move to processing
-    // Navigate to loading screen then to attributes
+    // Navigate to Octagon AI loading screen then to attributes
     setTimeout(() => {
       navigate('/loading');
     }, 2000);
@@ -48,7 +58,7 @@ const DataIntegrationHub = () => {
             </div>
             <StepIndicator currentStep={currentStep} />
           </div>
-          <InstitutionProfileWizard onComplete={handleProfileComplete} />
+          <InstitutionProfileWizard onComplete={handleProfileComplete} prefilledData={prefilledData} />
         </div>
       </div>
     );

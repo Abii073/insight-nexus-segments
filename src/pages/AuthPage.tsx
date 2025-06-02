@@ -29,6 +29,8 @@ const AuthPage = () => {
     }
     if (state?.institution) {
       setSelectedInstitution(state.institution);
+      // Store the selected institution in sessionStorage
+      sessionStorage.setItem('selectedInstitution', state.institution);
     }
   }, [location]);
 

@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -7,24 +6,31 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowRight, ArrowLeft } from 'lucide-react';
+import { ArrowRight, ArrowLeft, Lock } from 'lucide-react';
 
 interface InstitutionProfileWizardProps {
   onComplete: (profile: any) => void;
+  prefilledData?: {
+    institutionName?: string;
+    institutionType?: string;
+    institutionSize?: string;
+  };
 }
 
-const InstitutionProfileWizard = ({ onComplete }: InstitutionProfileWizardProps) => {
+const InstitutionProfileWizard = ({ onComplete, prefilledData }: InstitutionProfileWizardProps) => {
   const [step, setStep] = useState(1);
   const [profile, setProfile] = useState({
-    institutionName: '',
-    institutionType: '',
-    institutionSize: '',
+    institutionName: prefilledData?.institutionName || '',
+    institutionType: prefilledData?.institutionType || '',
+    institutionSize: prefilledData?.institutionSize || '',
     primaryUseCases: [] as string[],
     techMaturity: [] as string[],
     regulatoryScope: [] as string[],
     dataVolume: '',
     currentSystems: ''
   });
+
+  const isPreFilled = Boolean(prefilledData?.institutionName);
 
   const useCases = [
     'Fraud Detection & Prevention',
@@ -115,6 +121,16 @@ const InstitutionProfileWizard = ({ onComplete }: InstitutionProfileWizardProps)
           <CardContent className="space-y-6">
             {step === 1 && (
               <div className="space-y-4">
+                {isPreFilled && (
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
+                    <div className="flex items-center space-x-2">
+                      <Lock className="w-4 h-4 text-blue-600" />
+                      <p className="text-sm text-blue-700">
+                        Institution details have been automatically populated based on your selection.
+                      </p>
+                    </div>
+                  </div>
+                )}
                 <div>
                   <Label htmlFor="institution-name">Institution Name</Label>
                   <Input
@@ -122,12 +138,18 @@ const InstitutionProfileWizard = ({ onComplete }: InstitutionProfileWizardProps)
                     placeholder="e.g., Banco Nacional de México"
                     value={profile.institutionName}
                     onChange={(e) => setProfile(prev => ({ ...prev, institutionName: e.target.value }))}
+                    disabled={isPreFilled}
+                    className={isPreFilled ? "bg-gray-100" : ""}
                   />
                 </div>
                 <div>
                   <Label htmlFor="institution-type">Institution Type</Label>
-                  <Select value={profile.institutionType} onValueChange={(value) => setProfile(prev => ({ ...prev, institutionType: value }))}>
-                    <SelectTrigger>
+                  <Select 
+                    value={profile.institutionType} 
+                    onValueChange={(value) => setProfile(prev => ({ ...prev, institutionType: value }))}
+                    disabled={isPreFilled}
+                  >
+                    <SelectTrigger className={isPreFilled ? "bg-gray-100" : ""}>
                       <SelectValue placeholder="Select institution type" />
                     </SelectTrigger>
                     <SelectContent>
@@ -142,8 +164,12 @@ const InstitutionProfileWizard = ({ onComplete }: InstitutionProfileWizardProps)
                 </div>
                 <div>
                   <Label htmlFor="institution-size">Institution Size</Label>
-                  <Select value={profile.institutionSize} onValueChange={(value) => setProfile(prev => ({ ...prev, institutionSize: value }))}>
-                    <SelectTrigger>
+                  <Select 
+                    value={profile.institutionSize} 
+                    onValueChange={(value) => setProfile(prev => ({ ...prev, institutionSize: value }))}
+                    disabled={isPreFilled}
+                  >
+                    <SelectTrigger className={isPreFilled ? "bg-gray-100" : ""}>
                       <SelectValue placeholder="Select size" />
                     </SelectTrigger>
                     <SelectContent>
