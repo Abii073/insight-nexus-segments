@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
@@ -61,6 +60,10 @@ const CampaignPage = () => {
     }
   ];
 
+  const handleLaunchCampaign = (campaignTitle: string) => {
+    navigate(`/campaigns/execution?campaign=${encodeURIComponent(campaignTitle)}`);
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="container mx-auto max-w-6xl">
@@ -109,7 +112,10 @@ const CampaignPage = () => {
                       <Badge variant="secondary" className="mt-1">{campaign.channel}</Badge>
                     </div>
                   </div>
-                  <Button className="bg-brand-500 hover:bg-brand-600">
+                  <Button 
+                    className="bg-brand-500 hover:bg-brand-600"
+                    onClick={() => handleLaunchCampaign(campaign.title)}
+                  >
                     Launch Campaign
                   </Button>
                 </div>

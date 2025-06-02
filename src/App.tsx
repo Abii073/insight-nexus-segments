@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -13,6 +14,8 @@ import AttributeSelectionPage from "./pages/AttributeSelectionPage";
 import OctagonViewPage from "./pages/OctagonViewPage";
 import SegmentProfilePage from "./pages/SegmentProfilePage";
 import CampaignPage from "./pages/CampaignPage";
+import CampaignExecutionPage from "./pages/CampaignExecutionPage";
+import CampaignPerformancePage from "./pages/CampaignPerformancePage";
 import NotFound from "./pages/NotFound";
 import OracleServicesOverview from "./pages/OracleServicesOverview";
 
@@ -36,6 +39,8 @@ const App = () => (
             <Route path="/octagon" element={<OctagonViewPage />} />
             <Route path="/profiles/:segmentId" element={<SegmentProfilePage />} />
             <Route path="/campaigns/:segmentId" element={<CampaignPage />} />
+            <Route path="/campaigns/execution" element={<CampaignExecutionPage />} />
+            <Route path="/campaigns/performance" element={<CampaignPerformancePage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AnimatePresence>
