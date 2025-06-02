@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -15,6 +14,7 @@ import OctagonViewPage from "./pages/OctagonViewPage";
 import SegmentProfilePage from "./pages/SegmentProfilePage";
 import CampaignPage from "./pages/CampaignPage";
 import NotFound from "./pages/NotFound";
+import OracleServicesOverview from "./pages/OracleServicesOverview";
 
 const queryClient = new QueryClient();
 
@@ -28,6 +28,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<LandingPage />} />
             <Route path="/institutions" element={<InstitutionSelectionPage />} />
+            <Route path="/oracle-overview" element={<OracleServicesOverview />} />
             <Route path="/auth" element={<AuthPage />} />
             <Route path="/data-integration" element={<DataIntegrationHub />} />
             <Route path="/loading" element={<LoadingScreen />} />
