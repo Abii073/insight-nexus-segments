@@ -151,35 +151,33 @@ const InstitutionSelectionPage = () => {
                   onClick={() => handleInstitutionSelect(institution.id, institution.available)}
                 >
                   <CardContent className="p-6">
-                    <div className="flex items-start space-x-4">
-                      <div className="flex-shrink-0">
-                        <img 
-                          src={institution.logo} 
-                          alt={`${institution.name} logo`}
-                          className="h-12 w-auto object-contain"
-                        />
+                    <div className="text-center mb-4">
+                      <img 
+                        src={institution.logo} 
+                        alt={`${institution.name} logo`}
+                        className="h-8 w-auto object-contain mx-auto"
+                      />
+                    </div>
+                    <div>
+                      <div className="flex items-center justify-center space-x-2 mb-2">
+                        <h3 className="font-semibold text-gray-900">{institution.name}</h3>
+                        {institution.available ? (
+                          <CheckCircle className="w-4 h-4 text-green-500" />
+                        ) : (
+                          <span className="text-xs bg-gray-200 text-gray-600 px-2 py-1 rounded">
+                            Coming Soon
+                          </span>
+                        )}
                       </div>
-                      <div className="flex-1">
-                        <div className="flex items-center space-x-2 mb-2">
-                          <h3 className="font-semibold text-gray-900">{institution.name}</h3>
-                          {institution.available ? (
-                            <CheckCircle className="w-4 h-4 text-green-500" />
-                          ) : (
-                            <span className="text-xs bg-gray-200 text-gray-600 px-2 py-1 rounded">
-                              Coming Soon
-                            </span>
-                          )}
+                      <p className="text-sm text-gray-600 mb-3 text-center">{institution.description}</p>
+                      <div className="flex items-center justify-center space-x-4 text-xs text-gray-500">
+                        <div className="flex items-center space-x-1">
+                          <Shield className="w-3 h-3" />
+                          <span>SOC 2 Compliant</span>
                         </div>
-                        <p className="text-sm text-gray-600 mb-3">{institution.description}</p>
-                        <div className="flex items-center space-x-4 text-xs text-gray-500">
-                          <div className="flex items-center space-x-1">
-                            <Shield className="w-3 h-3" />
-                            <span>SOC 2 Compliant</span>
-                          </div>
-                          <div className="flex items-center space-x-1">
-                            <Building2 className="w-3 h-3" />
-                            <span>Enterprise Ready</span>
-                          </div>
+                        <div className="flex items-center space-x-1">
+                          <Building2 className="w-3 h-3" />
+                          <span>Enterprise Ready</span>
                         </div>
                       </div>
                     </div>
