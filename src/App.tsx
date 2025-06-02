@@ -16,6 +16,7 @@ import SegmentProfilePage from "./pages/SegmentProfilePage";
 import CampaignPage from "./pages/CampaignPage";
 import CampaignExecutionPage from "./pages/CampaignExecutionPage";
 import CampaignPerformancePage from "./pages/CampaignPerformancePage";
+import RetargetingPage from "./pages/RetargetingPage";
 import NotFound from "./pages/NotFound";
 import OracleServicesOverview from "./pages/OracleServicesOverview";
 
@@ -41,6 +42,7 @@ const App = () => (
             <Route path="/campaigns/:segmentId" element={<CampaignPage />} />
             <Route path="/campaigns/execution" element={<CampaignExecutionPage />} />
             <Route path="/campaigns/performance" element={<CampaignPerformancePage />} />
+            <Route path="/campaigns/retargeting" element={<RetargetingPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AnimatePresence>

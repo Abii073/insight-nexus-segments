@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate, useSearchParams } from 'react-router-dom';
@@ -6,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { ArrowLeft, TrendingUp, Users, Target, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, TrendingUp, Users, Target, AlertTriangle, RefreshCcw } from 'lucide-react';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer } from 'recharts';
 import Logo from '../components/Logo';
@@ -231,6 +230,13 @@ const CampaignPerformancePage = () => {
               variant="outline"
             >
               Back to Execution View
+            </Button>
+            <Button 
+              onClick={() => navigate('/campaigns/retargeting?campaign=' + encodeURIComponent(campaignName))}
+              className="bg-orange-500 hover:bg-orange-600"
+            >
+              <RefreshCcw className="w-4 h-4 mr-2" />
+              Launch Retargeting
             </Button>
             <Button 
               className="bg-brand-500 hover:bg-brand-600"
