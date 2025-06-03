@@ -97,14 +97,14 @@ const CampaignCard = ({
   return (
     <>
       <motion.div 
-        className="border rounded-lg bg-white shadow-sm p-6 relative overflow-hidden"
+        className="border rounded-lg bg-white shadow-sm relative overflow-hidden h-64"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, delay: index * 0.1 }}
       >
-        <div className="flex items-start gap-8">
-          {/* Left Side - Large Rhombus */}
-          <div className="flex-shrink-0 relative self-start">
+        <div className="flex h-full">
+          {/* Left Side - Full Height Rhombus (20% width) */}
+          <div className="w-1/5 flex items-center justify-center relative bg-gradient-to-br from-blue-50 to-indigo-50">
             <motion.div
               className="cursor-pointer"
               onMouseEnter={() => setShowBreakdown(true)}
@@ -116,7 +116,7 @@ const CampaignCard = ({
               <AttributeRhombus 
                 breakdown={attributeBreakdown}
                 size="lg"
-                className="w-28 h-28"
+                className="w-24 h-24"
               />
             </motion.div>
 
@@ -127,34 +127,36 @@ const CampaignCard = ({
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 10 }}
-                  className="absolute -top-16 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white px-3 py-2 rounded text-xs whitespace-nowrap z-20"
+                  className="absolute top-4 left-full ml-2 bg-gray-900 text-white px-3 py-2 rounded text-xs whitespace-nowrap z-20"
                 >
                   Financial Capacity Breakdown
-                  <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
+                  <div className="absolute top-1/2 left-0 transform -translate-y-1/2 -translate-x-full w-0 h-0 border-t-4 border-b-4 border-r-4 border-transparent border-r-gray-900"></div>
                 </motion.div>
               )}
             </AnimatePresence>
           </div>
 
-          {/* Right Side - All Content Displaced */}
-          <div className="flex-1 min-w-0">
-            <div className="flex items-start justify-between mb-3">
-              <h3 className="text-xl font-semibold text-gray-800 leading-tight pr-4">{title}</h3>
-              <div className={`px-3 py-1 rounded-full text-sm font-medium flex-shrink-0 ${getImpactColor()}`}>
-                {impact} impact
-              </div>
-            </div>
-            
-            <p className="text-gray-600 mb-4 leading-relaxed text-base">{description}</p>
-            
-            <div className="flex flex-wrap gap-3 mb-5">
-              <div className="flex items-center px-3 py-2 rounded-lg bg-gray-100">
-                {getChannelIcon()}
-                <span className="ml-2 text-sm font-medium text-gray-700">{channel}</span>
+          {/* Right Side - Content (80% width) */}
+          <div className="w-4/5 p-6 flex flex-col justify-between">
+            <div>
+              <div className="flex items-start justify-between mb-3">
+                <h3 className="text-xl font-semibold text-gray-800 leading-tight pr-4">{title}</h3>
+                <div className={`px-3 py-1 rounded-full text-sm font-medium flex-shrink-0 ${getImpactColor()}`}>
+                  {impact} impact
+                </div>
               </div>
               
-              <div className={`px-3 py-2 rounded-lg text-sm font-medium ${getObjectiveColor()}`}>
-                {objective}
+              <p className="text-gray-600 mb-4 leading-relaxed text-base">{description}</p>
+              
+              <div className="flex flex-wrap gap-3 mb-5">
+                <div className="flex items-center px-3 py-2 rounded-lg bg-gray-100">
+                  {getChannelIcon()}
+                  <span className="ml-2 text-sm font-medium text-gray-700">{channel}</span>
+                </div>
+                
+                <div className={`px-3 py-2 rounded-lg text-sm font-medium ${getObjectiveColor()}`}>
+                  {objective}
+                </div>
               </div>
             </div>
             
