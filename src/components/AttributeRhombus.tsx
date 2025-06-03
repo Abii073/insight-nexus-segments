@@ -50,10 +50,10 @@ const AttributeRhombus = ({ breakdown, size = 'md', className = '' }: AttributeR
     }
   };
 
-  // Calculate points for the radar chart with larger dimensions
-  const centerX = 60;
-  const centerY = 60;
-  const maxRadius = 50; // Increased from 35 to 50
+  // Calculate points for the radar chart with much larger dimensions
+  const centerX = 100;
+  const centerY = 100;
+  const maxRadius = 85; // Increased from 50 to 85
   
   // Define the 4 angles for diamond/rhombus shape (top, right, bottom, left)
   const angles = [0, 90, 180, 270].map(deg => (deg - 90) * Math.PI / 180); // Offset by -90 to start at top
@@ -110,7 +110,7 @@ const AttributeRhombus = ({ breakdown, size = 'md', className = '' }: AttributeR
           transition={{ duration: 0.2 }}
         >
           <svg
-            viewBox="0 0 120 120"
+            viewBox="0 0 200 200"
             className="w-full h-full drop-shadow-md"
           >
             {/* Grid lines (concentric diamonds) */}
@@ -121,8 +121,8 @@ const AttributeRhombus = ({ breakdown, size = 'md', className = '' }: AttributeR
                     points.slice(1).map(point => `L ${point.x} ${point.y}`).join(' ') + ' Z'}
                 fill="none"
                 stroke="#e5e7eb"
-                strokeWidth="1" // Increased from 0.5
-                opacity={0.6} // Increased from 0.5
+                strokeWidth="2"
+                opacity={0.7}
               />
             ))}
 
@@ -135,8 +135,8 @@ const AttributeRhombus = ({ breakdown, size = 'md', className = '' }: AttributeR
                 x2={centerX + Math.cos(angle) * maxRadius}
                 y2={centerY + Math.sin(angle) * maxRadius}
                 stroke="#e5e7eb"
-                strokeWidth="1" // Increased from 0.5
-                opacity={0.6} // Increased from 0.5
+                strokeWidth="2"
+                opacity={0.7}
               />
             ))}
 
@@ -152,7 +152,7 @@ const AttributeRhombus = ({ breakdown, size = 'md', className = '' }: AttributeR
               d={dataPath}
               fill="url(#radarGradient)"
               stroke="#3b82f6"
-              strokeWidth="3" // Increased from 2
+              strokeWidth="4"
               initial={{ opacity: 0.6 }}
               animate={{ opacity: isHovered ? 0.8 : 0.6 }}
               transition={{ duration: 0.2 }}
@@ -164,10 +164,10 @@ const AttributeRhombus = ({ breakdown, size = 'md', className = '' }: AttributeR
                 key={index}
                 cx={point.x}
                 cy={point.y}
-                r={hoveredIndex === index ? "7" : "6"} // Increased from 5/4
+                r={hoveredIndex === index ? "10" : "8"}
                 fill={point.dynamicColor}
                 stroke="white"
-                strokeWidth="3" // Increased from 2
+                strokeWidth="4"
                 className="cursor-pointer"
                 onMouseEnter={() => setHoveredIndex(index)}
                 initial={{ scale: 1 }}
@@ -186,16 +186,16 @@ const AttributeRhombus = ({ breakdown, size = 'md', className = '' }: AttributeR
             <circle
               cx={centerX}
               cy={centerY}
-              r="15" // Increased from 10
+              r="25"
               fill="white"
               stroke="#3b82f6"
-              strokeWidth="3" // Increased from 2
+              strokeWidth="4"
             />
             <text
               x={centerX}
-              y={centerY + 5} // Adjusted for larger circle
+              y={centerY + 8}
               textAnchor="middle"
-              className={`font-bold fill-blue-600 ${textSizeClasses[size]}`}
+              className={`font-bold fill-blue-600 text-xl`}
             >
               {breakdown.parentAttribute.charAt(0)}
             </text>
