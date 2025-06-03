@@ -32,7 +32,7 @@ const AttributeRhombus = ({ breakdown, size = 'md', className = '' }: AttributeR
   const sizeClasses = {
     sm: 'w-12 h-12',
     md: 'w-16 h-16',
-    lg: 'w-20 h-20'
+    //lg: 'w-20 h-20'
   };
 
   const textSizeClasses = {
