@@ -222,7 +222,7 @@ const LandingPage = () => {
                     <CheckCircle className="w-5 h-5 text-green-600" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-gray-900 mb-1">Advanced Analytics</h3>
+                    <h3 className="font-semibold text-gray-900 mb-1">360° Client Visualization</h3>
                     <p className="text-gray-600">Deep customer insights and predictive modeling capabilities</p>
                   </div>
                 </div>
