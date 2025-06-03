@@ -115,7 +115,7 @@ const CampaignPage = () => {
                   <AttributeRhombus 
                     breakdown={attributeBreakdown}
                     size="lg"
-                    className="w-24 h-24"
+                    className="w-36 h-36"
                   />
                 </div>
 
