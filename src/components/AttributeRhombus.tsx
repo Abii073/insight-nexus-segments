@@ -183,7 +183,7 @@ const AttributeRhombus = ({ breakdown, size = 'md', className = '' }: AttributeR
             ))}
 
             {/* Center circle with parent attribute initial */}
-            <circle
+            {/* <circle
               cx={centerX}
               cy={centerY}
               r="25"
@@ -198,7 +198,7 @@ const AttributeRhombus = ({ breakdown, size = 'md', className = '' }: AttributeR
               className={`font-bold fill-blue-600 text-xl`}
             >
               {breakdown.parentAttribute.charAt(0)}
-            </text>
+            </text> */}
           </svg>
 
           {/* Hover tooltip */}
