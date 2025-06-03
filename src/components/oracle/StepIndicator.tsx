@@ -10,7 +10,7 @@ const StepIndicator = ({ currentStep }: StepIndicatorProps) => {
   const steps = [
     { number: 1, title: 'Institution Profile', description: 'Configure your institutional settings' },
     { number: 2, title: 'Service Integration', description: 'Set up Oracle Cloud services' },
-    { number: 3, title: 'NeuroSegment AI', description: 'Prepare intelligent classification' }
+    { number: 3, title: 'Octagon AI', description: 'Prepare intelligent classification' }
   ];
 
   return (
