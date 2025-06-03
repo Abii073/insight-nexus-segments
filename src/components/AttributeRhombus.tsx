@@ -30,9 +30,9 @@ const AttributeRhombus = ({ breakdown, size = 'md', className = '' }: AttributeR
   const [showModal, setShowModal] = useState(false);
 
   const sizeClasses = {
-    sm: 'w-16 h-16',
-    md: 'w-20 h-20',
-    lg: 'w-24 h-24'
+    sm: 'w-12 h-12',
+    md: 'w-16 h-16',
+    lg: 'w-20 h-20'
   };
 
   const textSizeClasses = {
@@ -65,16 +65,17 @@ const AttributeRhombus = ({ breakdown, size = 'md', className = '' }: AttributeR
           transition={{ duration: 0.2 }}
         >
           <svg
-            viewBox="0 0 100 100"
-            className="w-full h-full drop-shadow-sm"
+            viewBox="0 0 120 120"
+            className="w-full h-full drop-shadow-md"
           >
-            {/* Define rhombus paths for each quadrant */}
+            {/* Define hexagon-style 4-sided paths */}
             {breakdown.subAttributes.map((attr, index) => {
+              // Hexagon-inspired 4-sided diamond shape with flatter angles
               const paths = [
-                "M 50 10 L 90 50 L 50 50 Z", // Top
-                "M 90 50 L 50 90 L 50 50 Z", // Right
-                "M 50 90 L 10 50 L 50 50 Z", // Bottom
-                "M 10 50 L 50 10 L 50 50 Z"  // Left
+                "M 60 15 L 95 35 L 60 60 Z", // Top - flatter angle
+                "M 95 35 L 105 85 L 60 60 Z", // Right - angled side
+                "M 105 85 L 60 105 L 60 60 Z", // Bottom - flatter angle
+                "M 60 105 L 25 85 L 60 60 Z", // Left - angled side
               ];
 
               return (
@@ -83,7 +84,7 @@ const AttributeRhombus = ({ breakdown, size = 'md', className = '' }: AttributeR
                   d={paths[index]}
                   fill={attr.color}
                   stroke="white"
-                  strokeWidth="1"
+                  strokeWidth="2"
                   className="cursor-pointer"
                   onMouseEnter={() => setHoveredIndex(index)}
                   initial={{ opacity: 0.8 }}
@@ -98,16 +99,16 @@ const AttributeRhombus = ({ breakdown, size = 'md', className = '' }: AttributeR
             
             {/* Center circle with parent attribute initial */}
             <circle
-              cx="50"
-              cy="50"
-              r="8"
+              cx="60"
+              cy="60"
+              r="10"
               fill="white"
               stroke="#e5e7eb"
-              strokeWidth="1"
+              strokeWidth="2"
             />
             <text
-              x="50"
-              y="55"
+              x="60"
+              y="66"
               textAnchor="middle"
               className={`font-bold fill-gray-700 ${textSizeClasses[size]}`}
             >
@@ -130,14 +131,14 @@ const AttributeRhombus = ({ breakdown, size = 'md', className = '' }: AttributeR
             )}
           </AnimatePresence>
 
-          {/* Pulsing border on hover */}
+          {/* Hexagon-style pulsing border on hover */}
           {isHovered && (
             <motion.div
               className="absolute inset-0 border-2 border-brand-500 rounded-sm"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               style={{
-                clipPath: 'polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)'
+                clipPath: 'polygon(50% 12%, 80% 29%, 87% 71%, 50% 88%, 20% 71%, 13% 29%)'
               }}
             />
           )}

@@ -136,31 +136,25 @@ const CampaignExecutionPage = () => {
         >
           <div className="flex items-center gap-4 mb-2">
             <h1 className="text-3xl font-bold text-gray-800">Campaign Execution</h1>
-            {/* Rhombus Integration - Desktop */}
-            <div className="hidden md:block">
-              <AttributeRhombus 
-                breakdown={attributeBreakdown}
-                size="md"
-              />
-            </div>
           </div>
           <p className="text-gray-600">Real-time control and monitoring dashboard</p>
-          {/* Rhombus Integration - Mobile */}
-          <div className="md:hidden mt-3 flex justify-start">
-            <AttributeRhombus 
-              breakdown={attributeBreakdown}
-              size="md"
-            />
-          </div>
         </motion.div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Left Panel - Performance Focus (65% - spans 2 columns) */}
           <div className="lg:col-span-2 space-y-6">
             {/* Campaign Summary Card */}
-            <Card>
+            <Card className="relative">
+              {/* Rhombus positioned at top-right inside the card */}
+              <div className="absolute top-4 right-4 z-10">
+                <AttributeRhombus 
+                  breakdown={attributeBreakdown}
+                  size="sm"
+                />
+              </div>
+              
               <CardHeader>
-                <div className="flex items-start justify-between">
+                <div className="flex items-start justify-between pr-16">
                   <div>
                     <div className="flex items-center gap-3 mb-3">
                       <CardTitle className="text-xl flex items-center gap-2">
@@ -169,13 +163,6 @@ const CampaignExecutionPage = () => {
                           {campaignData.status}
                         </Badge>
                       </CardTitle>
-                      {/* Additional rhombus for segment insights */}
-                      <div className="hidden lg:block">
-                        <AttributeRhombus 
-                          breakdown={attributeBreakdown}
-                          size="sm"
-                        />
-                      </div>
                     </div>
                     <div className="mt-3 space-y-2">
                       <div>
