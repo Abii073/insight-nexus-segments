@@ -97,14 +97,14 @@ const CampaignCard = ({
   return (
     <>
       <motion.div 
-        className="border rounded-lg bg-white shadow-sm p-5 relative overflow-hidden"
+        className="border rounded-lg bg-white shadow-sm p-6 relative overflow-hidden"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, delay: index * 0.1 }}
       >
-        <div className="flex gap-6">
-          {/* Left Side - Enhanced Rhombus */}
-          <div className="flex-shrink-0 relative">
+        <div className="flex items-start gap-8">
+          {/* Left Side - Large Rhombus */}
+          <div className="flex-shrink-0 relative self-start">
             <motion.div
               className="cursor-pointer"
               onMouseEnter={() => setShowBreakdown(true)}
@@ -116,7 +116,7 @@ const CampaignCard = ({
               <AttributeRhombus 
                 breakdown={attributeBreakdown}
                 size="lg"
-                className="w-20 h-20"
+                className="w-28 h-28"
               />
             </motion.div>
 
@@ -136,31 +136,31 @@ const CampaignCard = ({
             </AnimatePresence>
           </div>
 
-          {/* Right Side - Content displaced to maintain balance */}
+          {/* Right Side - All Content Displaced */}
           <div className="flex-1 min-w-0">
             <div className="flex items-start justify-between mb-3">
-              <h3 className="text-lg font-semibold text-gray-800 leading-tight">{title}</h3>
-              <div className={`px-2.5 py-0.5 rounded-full text-xs font-medium flex-shrink-0 ml-2 ${getImpactColor()}`}>
+              <h3 className="text-xl font-semibold text-gray-800 leading-tight pr-4">{title}</h3>
+              <div className={`px-3 py-1 rounded-full text-sm font-medium flex-shrink-0 ${getImpactColor()}`}>
                 {impact} impact
               </div>
             </div>
             
-            <p className="text-sm text-gray-600 mb-4 leading-relaxed">{description}</p>
+            <p className="text-gray-600 mb-4 leading-relaxed text-base">{description}</p>
             
-            <div className="flex flex-wrap gap-2 mb-4">
-              <div className="flex items-center px-2.5 py-1 rounded-md bg-gray-100">
+            <div className="flex flex-wrap gap-3 mb-5">
+              <div className="flex items-center px-3 py-2 rounded-lg bg-gray-100">
                 {getChannelIcon()}
-                <span className="ml-1 text-xs font-medium text-gray-700">{channel}</span>
+                <span className="ml-2 text-sm font-medium text-gray-700">{channel}</span>
               </div>
               
-              <div className={`px-2.5 py-1 rounded-md text-xs font-medium ${getObjectiveColor()}`}>
+              <div className={`px-3 py-2 rounded-lg text-sm font-medium ${getObjectiveColor()}`}>
                 {objective}
               </div>
             </div>
             
             <button
               onClick={handleActivate}
-              className="w-full mt-2 px-4 py-2 rounded-md bg-brand-500 text-white text-sm font-medium hover:bg-brand-600 transition-colors"
+              className="w-full px-6 py-3 rounded-lg bg-brand-500 text-white font-medium hover:bg-brand-600 transition-colors text-base"
             >
               Activate Campaign
             </button>
