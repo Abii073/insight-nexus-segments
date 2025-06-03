@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate, useSearchParams } from 'react-router-dom';
@@ -182,9 +181,9 @@ const CampaignPerformancePage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="min-h-screen bg-gray-50 p-4 md:p-6">
       <div className="container mx-auto max-w-7xl">
-        <header className="flex items-center justify-between mb-8">
+        <header className="flex items-center justify-between mb-6 md:mb-8">
           <div className="flex items-center gap-4">
             <Button
               variant="ghost"
@@ -195,17 +194,17 @@ const CampaignPerformancePage = () => {
             </Button>
             <Logo size="md" />
           </div>
-          <div className="text-gray-500 text-sm">Campaign Performance Analytics</div>
+          <div className="text-gray-500 text-sm hidden md:block">Campaign Performance Analytics</div>
         </header>
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
-          className="mb-8"
+          className="mb-6 md:mb-8"
         >
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">Campaign Results Dashboard</h1>
-          <div className="flex items-center gap-3">
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2">Campaign Results Dashboard</h1>
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
             <p className="text-gray-600">Performance analysis for</p>
             <Badge variant="outline" className="font-medium">{campaignName}</Badge>
             <TooltipProvider>
@@ -234,13 +233,13 @@ const CampaignPerformancePage = () => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
                 <motion.div 
-                  className="text-center p-4 bg-blue-50 rounded-lg"
+                  className="text-center p-3 md:p-4 bg-blue-50 rounded-lg"
                   whileHover={{ scale: 1.02 }}
                 >
-                  <div className="flex items-center justify-center gap-2 mb-2">
-                    <div className="text-2xl font-bold text-blue-600">{performanceSummary.totalReach.value.toLocaleString()}</div>
+                  <div className="flex flex-col sm:flex-row items-center justify-center gap-2 mb-2">
+                    <div className="text-xl md:text-2xl font-bold text-blue-600">{performanceSummary.totalReach.value.toLocaleString()}</div>
                     <div className="flex items-center text-green-600">
                       <TrendingUp className="w-4 h-4" />
                       <span className="text-xs">+{performanceSummary.totalReach.trend}%</span>
@@ -250,11 +249,11 @@ const CampaignPerformancePage = () => {
                 </motion.div>
 
                 <motion.div 
-                  className="text-center p-4 bg-green-50 rounded-lg"
+                  className="text-center p-3 md:p-4 bg-green-50 rounded-lg"
                   whileHover={{ scale: 1.02 }}
                 >
-                  <div className="flex items-center justify-center gap-2 mb-2">
-                    <div className="text-2xl font-bold text-green-600">{performanceSummary.engagementRate.value}%</div>
+                  <div className="flex flex-col sm:flex-row items-center justify-center gap-2 mb-2">
+                    <div className="text-xl md:text-2xl font-bold text-green-600">{performanceSummary.engagementRate.value}%</div>
                     <div className="flex items-center text-green-600">
                       <TrendingUp className="w-4 h-4" />
                       <span className="text-xs">+{performanceSummary.engagementRate.trend}%</span>
@@ -264,11 +263,11 @@ const CampaignPerformancePage = () => {
                 </motion.div>
 
                 <motion.div 
-                  className="text-center p-4 bg-purple-50 rounded-lg"
+                  className="text-center p-3 md:p-4 bg-purple-50 rounded-lg"
                   whileHover={{ scale: 1.02 }}
                 >
-                  <div className="flex items-center justify-center gap-2 mb-2">
-                    <div className="text-2xl font-bold text-purple-600">{performanceSummary.conversionRate.value}%</div>
+                  <div className="flex flex-col sm:flex-row items-center justify-center gap-2 mb-2">
+                    <div className="text-xl md:text-2xl font-bold text-purple-600">{performanceSummary.conversionRate.value}%</div>
                     <div className="flex items-center text-red-600">
                       <TrendingDown className="w-4 h-4" />
                       <span className="text-xs">{performanceSummary.conversionRate.trend}%</span>
@@ -278,11 +277,11 @@ const CampaignPerformancePage = () => {
                 </motion.div>
 
                 <motion.div 
-                  className="text-center p-4 bg-orange-50 rounded-lg"
+                  className="text-center p-3 md:p-4 bg-orange-50 rounded-lg"
                   whileHover={{ scale: 1.02 }}
                 >
-                  <div className="flex items-center justify-center gap-2 mb-2">
-                    <div className="text-2xl font-bold text-orange-600">{performanceSummary.churnReduction.value}%</div>
+                  <div className="flex flex-col sm:flex-row items-center justify-center gap-2 mb-2">
+                    <div className="text-xl md:text-2xl font-bold text-orange-600">{performanceSummary.churnReduction.value}%</div>
                     <div className="flex items-center text-green-600">
                       <TrendingUp className="w-4 h-4" />
                       <span className="text-xs">+{performanceSummary.churnReduction.trend}%</span>
@@ -292,11 +291,11 @@ const CampaignPerformancePage = () => {
                 </motion.div>
 
                 <motion.div 
-                  className="text-center p-4 bg-red-50 rounded-lg"
+                  className="text-center p-3 md:p-4 bg-red-50 rounded-lg"
                   whileHover={{ scale: 1.02 }}
                 >
-                  <div className="flex items-center justify-center gap-2 mb-2">
-                    <div className="text-2xl font-bold text-red-600">{performanceSummary.retargetingCandidates.value.toLocaleString()}</div>
+                  <div className="flex flex-col sm:flex-row items-center justify-center gap-2 mb-2">
+                    <div className="text-xl md:text-2xl font-bold text-red-600">{performanceSummary.retargetingCandidates.value.toLocaleString()}</div>
                     <div className="flex items-center text-green-600">
                       <TrendingUp className="w-4 h-4" />
                       <span className="text-xs">+{performanceSummary.retargetingCandidates.trend}%</span>
@@ -308,9 +307,9 @@ const CampaignPerformancePage = () => {
             </CardContent>
           </Card>
 
-          <div className="grid lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
             {/* Enhanced Segment Performance */}
-            <div className="lg:col-span-2">
+            <div className="xl:col-span-2">
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
@@ -322,9 +321,9 @@ const CampaignPerformancePage = () => {
                   <div className="space-y-4">
                     {segmentPerformance.map((segment, index) => (
                       <div key={index} className="border rounded-lg p-4 hover:bg-gray-50 transition-colors">
-                        <div className="flex items-center justify-between mb-3">
-                          <div className="flex items-center gap-3">
-                            <h3 className="font-medium text-lg">{segment.segment}</h3>
+                        <div className="flex flex-col lg:flex-row items-start justify-between mb-3 gap-3">
+                          <div className="flex flex-wrap items-center gap-3">
+                            <h3 className="font-medium text-base lg:text-lg">{segment.segment}</h3>
                             <Badge className={getBadgeStyle(segment.badge)}>
                               {getBadgeIcon(segment.badge)} {segment.badge}
                             </Badge>
@@ -343,18 +342,18 @@ const CampaignPerformancePage = () => {
                           </Button>
                         </div>
                         
-                        <div className="grid grid-cols-3 gap-4 mb-3">
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-3">
                           <div>
                             <div className="text-sm text-gray-600">Engagement</div>
-                            <div className="text-xl font-bold text-blue-600">{segment.engagement}%</div>
+                            <div className="text-lg lg:text-xl font-bold text-blue-600">{segment.engagement}%</div>
                           </div>
                           <div>
                             <div className="text-sm text-gray-600">Conversions</div>
-                            <div className="text-xl font-bold text-green-600">{segment.conversions}</div>
+                            <div className="text-lg lg:text-xl font-bold text-green-600">{segment.conversions}</div>
                           </div>
                           <div>
                             <div className="text-sm text-gray-600">Churn Reduction</div>
-                            <div className="text-xl font-bold text-orange-600">{segment.churnReduction}%</div>
+                            <div className="text-lg lg:text-xl font-bold text-orange-600">{segment.churnReduction}%</div>
                           </div>
                         </div>
 
@@ -367,7 +366,7 @@ const CampaignPerformancePage = () => {
                             exit={{ opacity: 0, height: 0 }}
                             className="border-t pt-3 mt-3"
                           >
-                            <div className="grid grid-cols-3 gap-4 mb-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
                               <div className="text-center">
                                 <Mail className="w-5 h-5 mx-auto mb-1 text-blue-600" />
                                 <div className="text-sm font-medium">Email: {segment.channels.email}%</div>
@@ -381,7 +380,7 @@ const CampaignPerformancePage = () => {
                                 <div className="text-sm font-medium">SMS: {segment.channels.sms}%</div>
                               </div>
                             </div>
-                            <div className="flex justify-between items-center">
+                            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
                               <span className="text-sm font-medium text-gray-700">Recommended Action:</span>
                               <Button size="sm" variant="outline">{segment.nextAction}</Button>
                             </div>
@@ -408,11 +407,11 @@ const CampaignPerformancePage = () => {
                     {smartInsights.map((insight, index) => (
                       <div key={index} className="p-3 bg-blue-50 rounded-lg border-l-4 border-brand-500">
                         <div className="flex items-start gap-2 mb-2">
-                          <insight.icon className="w-4 h-4 text-brand-600 mt-0.5" />
+                          <insight.icon className="w-4 h-4 text-brand-600 mt-0.5 flex-shrink-0" />
                           <h4 className="text-sm font-medium text-gray-800">{insight.title}</h4>
                         </div>
                         <p className="text-xs text-gray-600 mb-3">{insight.text}</p>
-                        <Button size="sm" variant="outline" className="text-xs">
+                        <Button size="sm" variant="outline" className="text-xs w-full sm:w-auto">
                           <Eye className="w-3 h-3 mr-1" />
                           {insight.action}
                         </Button>
@@ -443,7 +442,7 @@ const CampaignPerformancePage = () => {
                 <TabsContent value="engagement" className="space-y-4">
                   <ChartContainer config={chartConfig} className="h-64">
                     <ResponsiveContainer width="100%" height="100%">
-                      <BarChart data={channelData.engagement}>
+                      <BarChart data={channelData.engagement} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                         <XAxis dataKey="channel" />
                         <YAxis />
                         <ChartTooltip content={<ChartTooltipContent />} />
@@ -456,7 +455,7 @@ const CampaignPerformancePage = () => {
                 <TabsContent value="conversion" className="space-y-4">
                   <ChartContainer config={chartConfig} className="h-64">
                     <ResponsiveContainer width="100%" height="100%">
-                      <BarChart data={channelData.conversion}>
+                      <BarChart data={channelData.conversion} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                         <XAxis dataKey="channel" />
                         <YAxis />
                         <ChartTooltip content={<ChartTooltipContent />} />
@@ -469,7 +468,7 @@ const CampaignPerformancePage = () => {
                 <TabsContent value="retargeting" className="space-y-4">
                   <ChartContainer config={chartConfig} className="h-64">
                     <ResponsiveContainer width="100%" height="100%">
-                      <BarChart data={channelData.retargeting}>
+                      <BarChart data={channelData.retargeting} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                         <XAxis dataKey="channel" />
                         <YAxis />
                         <ChartTooltip content={<ChartTooltipContent />} />
@@ -483,30 +482,30 @@ const CampaignPerformancePage = () => {
           </Card>
 
           {/* Enhanced Action Controls */}
-          <div className="flex flex-wrap justify-center gap-4">
+          <div className="flex flex-wrap justify-center gap-3 md:gap-4">
             <Button 
               onClick={() => navigate('/campaigns/execution?campaign=' + encodeURIComponent(campaignName))}
               variant="outline"
-              className="flex items-center gap-2"
+              className="flex items-center gap-2 text-sm"
             >
               <ArrowLeft className="w-4 h-4" />
               Back to Execution View
             </Button>
             <Button 
               onClick={() => navigate('/campaigns/retargeting?campaign=' + encodeURIComponent(campaignName))}
-              className="bg-orange-500 hover:bg-orange-600 flex items-center gap-2"
+              className="bg-orange-500 hover:bg-orange-600 flex items-center gap-2 text-sm"
             >
               <RefreshCcw className="w-4 h-4" />
               Create Retargeting Campaign
             </Button>
             <Button 
-              className="bg-purple-500 hover:bg-purple-600 flex items-center gap-2"
+              className="bg-purple-500 hover:bg-purple-600 flex items-center gap-2 text-sm"
             >
               <Settings className="w-4 h-4" />
               Reconfigure Strategy
             </Button>
             <Button 
-              className="bg-brand-500 hover:bg-brand-600 flex items-center gap-2"
+              className="bg-brand-500 hover:bg-brand-600 flex items-center gap-2 text-sm"
             >
               <Download className="w-4 h-4" />
               Export Report
@@ -514,7 +513,7 @@ const CampaignPerformancePage = () => {
             <Button 
               variant="outline"
               onClick={() => navigate('/octagon')}
-              className="flex items-center gap-2"
+              className="flex items-center gap-2 text-sm"
             >
               <Target className="w-4 h-4" />
               Back to Segmentation Map
