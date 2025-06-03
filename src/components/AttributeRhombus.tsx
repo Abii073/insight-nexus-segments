@@ -99,7 +99,7 @@ const AttributeRhombus = ({ breakdown, size = 'md', className = '' }: AttributeR
     <>
       <div className={`relative ${className}`}>
         <motion.div
-          className={`${sizeClasses[size]} relative cursor-pointer`}
+          //className={`${sizeClasses[size]} relative cursor-pointer`}
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => {
             setIsHovered(false);
