@@ -1,11 +1,14 @@
+
 import React from 'react';
 import { motion } from 'framer-motion';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import Logo from '../components/Logo';
+import AttributeRhombus from '../components/AttributeRhombus';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Mail, MessageSquare, Smartphone, Globe } from 'lucide-react';
+import { getAttributeBreakdown } from '../data/attributeBreakdowns';
 
 const CampaignPage = () => {
   const { segmentId } = useParams();
@@ -64,6 +67,9 @@ const CampaignPage = () => {
     navigate(`/campaigns/execution?campaign=${encodeURIComponent(campaignTitle)}`);
   };
 
+  // Get attribute breakdown for the current segment
+  const attributeBreakdown = getAttributeBreakdown(segmentName);
+
   return (
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="container mx-auto max-w-6xl">
@@ -107,9 +113,26 @@ const CampaignPage = () => {
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
                     <campaign.icon className="w-6 h-6 text-brand-600" />
-                    <div>
-                      <CardTitle className="text-xl">{campaign.title}</CardTitle>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3 mb-1">
+                        <CardTitle className="text-xl">{campaign.title}</CardTitle>
+                        {/* Rhombus Integration - Desktop */}
+                        <div className="hidden md:block">
+                          <AttributeRhombus 
+                            breakdown={attributeBreakdown}
+                            size="sm"
+                            className="ml-2"
+                          />
+                        </div>
+                      </div>
                       <Badge variant="secondary" className="mt-1">{campaign.channel}</Badge>
+                      {/* Rhombus Integration - Mobile */}
+                      <div className="md:hidden mt-2 flex justify-start">
+                        <AttributeRhombus 
+                          breakdown={attributeBreakdown}
+                          size="sm"
+                        />
+                      </div>
                     </div>
                   </div>
                   <Button 

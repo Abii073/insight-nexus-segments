@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import AttributeRhombus from '../components/AttributeRhombus';
 import { 
   ArrowLeft, 
   Play, 
@@ -23,6 +24,7 @@ import {
   Lightbulb
 } from 'lucide-react';
 import Logo from '../components/Logo';
+import { getAttributeBreakdown } from '../data/attributeBreakdowns';
 
 const CampaignExecutionPage = () => {
   const navigate = useNavigate();
@@ -106,6 +108,9 @@ const CampaignExecutionPage = () => {
     setIsPaused(!isPaused);
   };
 
+  // Get attribute breakdown for the primary segment
+  const attributeBreakdown = getAttributeBreakdown('Tech-Savvy Millennials');
+
   return (
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="container mx-auto max-w-7xl">
@@ -129,8 +134,24 @@ const CampaignExecutionPage = () => {
           transition={{ duration: 0.3 }}
           className="mb-8"
         >
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">Campaign Execution</h1>
+          <div className="flex items-center gap-4 mb-2">
+            <h1 className="text-3xl font-bold text-gray-800">Campaign Execution</h1>
+            {/* Rhombus Integration - Desktop */}
+            <div className="hidden md:block">
+              <AttributeRhombus 
+                breakdown={attributeBreakdown}
+                size="md"
+              />
+            </div>
+          </div>
           <p className="text-gray-600">Real-time control and monitoring dashboard</p>
+          {/* Rhombus Integration - Mobile */}
+          <div className="md:hidden mt-3 flex justify-start">
+            <AttributeRhombus 
+              breakdown={attributeBreakdown}
+              size="md"
+            />
+          </div>
         </motion.div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -141,12 +162,21 @@ const CampaignExecutionPage = () => {
               <CardHeader>
                 <div className="flex items-start justify-between">
                   <div>
-                    <CardTitle className="text-xl flex items-center gap-2">
-                      {campaignData.name}
-                      <Badge className={`${getStatusColor(campaignData.status)}`}>
-                        {campaignData.status}
-                      </Badge>
-                    </CardTitle>
+                    <div className="flex items-center gap-3 mb-3">
+                      <CardTitle className="text-xl flex items-center gap-2">
+                        {campaignData.name}
+                        <Badge className={`${getStatusColor(campaignData.status)}`}>
+                          {campaignData.status}
+                        </Badge>
+                      </CardTitle>
+                      {/* Additional rhombus for segment insights */}
+                      <div className="hidden lg:block">
+                        <AttributeRhombus 
+                          breakdown={attributeBreakdown}
+                          size="sm"
+                        />
+                      </div>
+                    </div>
                     <div className="mt-3 space-y-2">
                       <div>
                         <span className="text-sm font-medium text-gray-600">Target Segments: </span>
