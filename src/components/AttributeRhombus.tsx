@@ -50,6 +50,40 @@ const AttributeRhombus = ({ breakdown, size = 'md', className = '' }: AttributeR
     }
   };
 
+  // Calculate points for the radar chart
+  const centerX = 60;
+  const centerY = 60;
+  const maxRadius = 35;
+  
+  // Define the 4 angles for diamond/rhombus shape (top, right, bottom, left)
+  const angles = [0, 90, 180, 270].map(deg => (deg - 90) * Math.PI / 180); // Offset by -90 to start at top
+  
+  // Calculate grid lines (concentric diamonds)
+  const gridLevels = [0.2, 0.4, 0.6, 0.8, 1.0];
+  
+  // Calculate data points based on attribute values
+  const dataPoints = breakdown.subAttributes.map((attr, index) => {
+    const angle = angles[index];
+    const radius = (attr.value / 100) * maxRadius;
+    return {
+      x: centerX + Math.cos(angle) * radius,
+      y: centerY + Math.sin(angle) * radius,
+      ...attr
+    };
+  });
+
+  // Calculate grid points for each level
+  const gridPoints = gridLevels.map(level => 
+    angles.map(angle => ({
+      x: centerX + Math.cos(angle) * maxRadius * level,
+      y: centerY + Math.sin(angle) * maxRadius * level
+    }))
+  );
+
+  // Create path string for the filled area
+  const dataPath = `M ${dataPoints[0].x} ${dataPoints[0].y} ` +
+    dataPoints.slice(1).map(point => `L ${point.x} ${point.y}`).join(' ') + ' Z';
+
   return (
     <>
       <div className={`relative ${className}`}>
@@ -68,49 +102,76 @@ const AttributeRhombus = ({ breakdown, size = 'md', className = '' }: AttributeR
             viewBox="0 0 120 120"
             className="w-full h-full drop-shadow-md"
           >
-            {/* Define hexagon-style 4-sided paths */}
-            {breakdown.subAttributes.map((attr, index) => {
-              // Hexagon-inspired 4-sided diamond shape with flatter angles
-              const paths = [
-                "M 60 15 L 95 35 L 60 60 Z", // Top - flatter angle
-                "M 95 35 L 105 85 L 60 60 Z", // Right - angled side
-                "M 105 85 L 60 105 L 60 60 Z", // Bottom - flatter angle
-                "M 60 105 L 25 85 L 60 60 Z", // Left - angled side
-              ];
+            {/* Grid lines (concentric diamonds) */}
+            {gridPoints.map((points, levelIndex) => (
+              <path
+                key={levelIndex}
+                d={`M ${points[0].x} ${points[0].y} ` +
+                    points.slice(1).map(point => `L ${point.x} ${point.y}`).join(' ') + ' Z'}
+                fill="none"
+                stroke="#e5e7eb"
+                strokeWidth="0.5"
+                opacity={0.5}
+              />
+            ))}
 
-              return (
-                <motion.path
-                  key={index}
-                  d={paths[index]}
-                  fill={attr.color}
-                  stroke="white"
-                  strokeWidth="2"
-                  className="cursor-pointer"
-                  onMouseEnter={() => setHoveredIndex(index)}
-                  initial={{ opacity: 0.8 }}
-                  animate={{
-                    opacity: hoveredIndex === index ? 1 : (isHovered ? 0.9 : 0.8),
-                    scale: hoveredIndex === index ? 1.05 : 1
-                  }}
-                  transition={{ duration: 0.2 }}
-                />
-              );
-            })}
-            
+            {/* Axis lines */}
+            {angles.map((angle, index) => (
+              <line
+                key={index}
+                x1={centerX}
+                y1={centerY}
+                x2={centerX + Math.cos(angle) * maxRadius}
+                y2={centerY + Math.sin(angle) * maxRadius}
+                stroke="#e5e7eb"
+                strokeWidth="0.5"
+                opacity={0.5}
+              />
+            ))}
+
+            {/* Filled data area */}
+            <motion.path
+              d={dataPath}
+              fill="rgba(59, 130, 246, 0.3)"
+              stroke="#3b82f6"
+              strokeWidth="2"
+              initial={{ opacity: 0.6 }}
+              animate={{ opacity: isHovered ? 0.8 : 0.6 }}
+              transition={{ duration: 0.2 }}
+            />
+
+            {/* Data points */}
+            {dataPoints.map((point, index) => (
+              <motion.circle
+                key={index}
+                cx={point.x}
+                cy={point.y}
+                r={hoveredIndex === index ? "4" : "3"}
+                fill="#3b82f6"
+                stroke="white"
+                strokeWidth="2"
+                className="cursor-pointer"
+                onMouseEnter={() => setHoveredIndex(index)}
+                initial={{ scale: 1 }}
+                animate={{ scale: hoveredIndex === index ? 1.3 : 1 }}
+                transition={{ duration: 0.2 }}
+              />
+            ))}
+
             {/* Center circle with parent attribute initial */}
             <circle
-              cx="60"
-              cy="60"
-              r="10"
+              cx={centerX}
+              cy={centerY}
+              r="8"
               fill="white"
-              stroke="#e5e7eb"
+              stroke="#3b82f6"
               strokeWidth="2"
             />
             <text
-              x="60"
-              y="66"
+              x={centerX}
+              y={centerY + 3}
               textAnchor="middle"
-              className={`font-bold fill-gray-700 ${textSizeClasses[size]}`}
+              className={`font-bold fill-blue-600 ${textSizeClasses[size]}`}
             >
               {breakdown.parentAttribute.charAt(0)}
             </text>
@@ -125,20 +186,20 @@ const AttributeRhombus = ({ breakdown, size = 'md', className = '' }: AttributeR
                 exit={{ opacity: 0, y: 10 }}
                 className="absolute -top-12 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white px-2 py-1 rounded text-xs whitespace-nowrap z-10"
               >
-                {breakdown.subAttributes[hoveredIndex].name}
+                {breakdown.subAttributes[hoveredIndex].name}: {breakdown.subAttributes[hoveredIndex].value}%
                 <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
               </motion.div>
             )}
           </AnimatePresence>
 
-          {/* Hexagon-style pulsing border on hover */}
+          {/* Pulsing border on hover */}
           {isHovered && (
             <motion.div
-              className="absolute inset-0 border-2 border-brand-500 rounded-sm"
+              className="absolute inset-0 border-2 border-blue-500 rounded-sm"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               style={{
-                clipPath: 'polygon(50% 12%, 80% 29%, 87% 71%, 50% 88%, 20% 71%, 13% 29%)'
+                clipPath: 'polygon(50% 12%, 88% 50%, 50% 88%, 12% 50%)'
               }}
             />
           )}
