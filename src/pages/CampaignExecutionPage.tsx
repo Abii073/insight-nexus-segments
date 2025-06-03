@@ -144,18 +144,10 @@ const CampaignExecutionPage = () => {
           {/* Left Panel - Performance Focus (65% - spans 2 columns) */}
           <div className="lg:col-span-2 space-y-6">
             {/* Campaign Summary Card */}
-            <Card className="relative">
-              {/* Rhombus positioned at top-right inside the card */}
-              <div className="absolute top-4 right-4 z-10">
-                <AttributeRhombus 
-                  breakdown={attributeBreakdown}
-                  size="sm"
-                />
-              </div>
-              
+            <Card>
               <CardHeader>
-                <div className="flex items-start justify-between pr-16">
-                  <div>
+                <div className="flex items-start justify-between gap-6">
+                  <div className="flex-1">
                     <div className="flex items-center gap-3 mb-3">
                       <CardTitle className="text-xl flex items-center gap-2">
                         {campaignData.name}
@@ -177,6 +169,15 @@ const CampaignExecutionPage = () => {
                         <span>{campaignData.daysLeft} days left</span>
                       </div>
                     </div>
+                  </div>
+                  
+                  {/* Rhombus positioned in its own column without overlapping */}
+                  <div className="flex-shrink-0">
+                    <AttributeRhombus 
+                      breakdown={attributeBreakdown}
+                      size="md"
+                      className="w-32 h-32"
+                    />
                   </div>
                 </div>
               </CardHeader>
