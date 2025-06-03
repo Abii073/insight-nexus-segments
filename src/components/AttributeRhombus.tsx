@@ -61,14 +61,25 @@ const AttributeRhombus = ({ breakdown, size = 'md', className = '' }: AttributeR
   // Calculate grid lines (concentric diamonds)
   const gridLevels = [0.2, 0.4, 0.6, 0.8, 1.0];
   
-  // Calculate data points based on attribute values
+  // Map corner positions to specific attributes with their colors
+  const cornerMapping = {
+    0: { name: 'Disposable Income', color: '#10b981' }, // Top - Green
+    1: { name: 'Credit Usage', color: '#f59e0b' }, // Right - Yellow/Orange  
+    2: { name: 'Payment Timeliness', color: '#8b5cf6' }, // Bottom - Purple
+    3: { name: 'Account Balance', color: '#f97316' } // Left - Orange
+  };
+  
+  // Calculate data points based on attribute values with dynamic colors
   const dataPoints = breakdown.subAttributes.map((attr, index) => {
     const angle = angles[index];
     const radius = (attr.value / 100) * maxRadius;
+    const cornerInfo = cornerMapping[index as keyof typeof cornerMapping];
+    
     return {
       x: centerX + Math.cos(angle) * radius,
       y: centerY + Math.sin(angle) * radius,
-      ...attr
+      ...attr,
+      dynamicColor: cornerInfo?.color || attr.color
     };
   });
 
@@ -129,10 +140,17 @@ const AttributeRhombus = ({ breakdown, size = 'md', className = '' }: AttributeR
               />
             ))}
 
-            {/* Filled data area */}
+            {/* Filled data area with gradient */}
+            <defs>
+              <linearGradient id="radarGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="rgba(59, 130, 246, 0.4)" />
+                <stop offset="100%" stopColor="rgba(59, 130, 246, 0.1)" />
+              </linearGradient>
+            </defs>
+            
             <motion.path
               d={dataPath}
-              fill="rgba(59, 130, 246, 0.3)"
+              fill="url(#radarGradient)"
               stroke="#3b82f6"
               strokeWidth="2"
               initial={{ opacity: 0.6 }}
@@ -140,20 +158,26 @@ const AttributeRhombus = ({ breakdown, size = 'md', className = '' }: AttributeR
               transition={{ duration: 0.2 }}
             />
 
-            {/* Data points */}
+            {/* Data points with dynamic colors and pulsing for high impact */}
             {dataPoints.map((point, index) => (
               <motion.circle
                 key={index}
                 cx={point.x}
                 cy={point.y}
-                r={hoveredIndex === index ? "4" : "3"}
-                fill="#3b82f6"
+                r={hoveredIndex === index ? "5" : "4"}
+                fill={point.dynamicColor}
                 stroke="white"
                 strokeWidth="2"
                 className="cursor-pointer"
                 onMouseEnter={() => setHoveredIndex(index)}
                 initial={{ scale: 1 }}
-                animate={{ scale: hoveredIndex === index ? 1.3 : 1 }}
+                animate={{ 
+                  scale: hoveredIndex === index ? 1.3 : 1,
+                  ...(point.impact === 'high' ? {
+                    scale: [1, 1.2, 1],
+                    transition: { duration: 2, repeat: Infinity }
+                  } : {})
+                }}
                 transition={{ duration: 0.2 }}
               />
             ))}
@@ -162,14 +186,14 @@ const AttributeRhombus = ({ breakdown, size = 'md', className = '' }: AttributeR
             <circle
               cx={centerX}
               cy={centerY}
-              r="8"
+              r="10"
               fill="white"
               stroke="#3b82f6"
               strokeWidth="2"
             />
             <text
               x={centerX}
-              y={centerY + 3}
+              y={centerY + 4}
               textAnchor="middle"
               className={`font-bold fill-blue-600 ${textSizeClasses[size]}`}
             >
