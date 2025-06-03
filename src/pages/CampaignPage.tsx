@@ -108,63 +108,60 @@ const CampaignPage = () => {
           className="grid gap-6"
         >
           {campaigns.map((campaign, index) => (
-            <Card key={campaign.id} className="hover:shadow-lg transition-shadow">
-              <CardHeader>
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-3">
-                    <campaign.icon className="w-6 h-6 text-brand-600" />
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-1">
-                        <CardTitle className="text-xl">{campaign.title}</CardTitle>
-                        {/* Rhombus Integration - Desktop */}
-                        <div className="hidden md:block">
-                          <AttributeRhombus 
-                            breakdown={attributeBreakdown}
-                            size="sm"
-                            className="ml-2"
-                          />
+            <Card key={campaign.id} className="hover:shadow-lg transition-shadow h-64 overflow-hidden">
+              <div className="flex h-full">
+                {/* Left Side - Full Height Rhombus (20% width) */}
+                <div className="w-1/5 flex items-center justify-center relative bg-gradient-to-br from-blue-50 to-indigo-50">
+                  <AttributeRhombus 
+                    breakdown={attributeBreakdown}
+                    size="lg"
+                    className="w-24 h-24"
+                  />
+                </div>
+
+                {/* Right Side - Content (80% width) */}
+                <div className="w-4/5 flex flex-col">
+                  <CardHeader className="flex-shrink-0">
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-center gap-3">
+                        <campaign.icon className="w-6 h-6 text-brand-600" />
+                        <div className="flex-1">
+                          <CardTitle className="text-xl">{campaign.title}</CardTitle>
+                          <Badge variant="secondary" className="mt-1">{campaign.channel}</Badge>
                         </div>
                       </div>
-                      <Badge variant="secondary" className="mt-1">{campaign.channel}</Badge>
-                      {/* Rhombus Integration - Mobile */}
-                      <div className="md:hidden mt-2 flex justify-start">
-                        <AttributeRhombus 
-                          breakdown={attributeBreakdown}
-                          size="sm"
-                        />
+                      <Button 
+                        className="bg-brand-500 hover:bg-brand-600"
+                        onClick={() => handleLaunchCampaign(campaign.title)}
+                      >
+                        Launch Campaign
+                      </Button>
+                    </div>
+                  </CardHeader>
+                  <CardContent className="flex-1 flex flex-col justify-between">
+                    <p className="text-gray-600 mb-4">{campaign.description}</p>
+                    
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                      <div>
+                        <span className="font-medium text-gray-700">Est. Reach</span>
+                        <p className="text-brand-600">{campaign.estimatedReach}</p>
+                      </div>
+                      <div>
+                        <span className="font-medium text-gray-700">Expected Engagement</span>
+                        <p className="text-green-600">{campaign.expectedEngagement}</p>
+                      </div>
+                      <div>
+                        <span className="font-medium text-gray-700">Timeline</span>
+                        <p className="text-gray-600">{campaign.timeline}</p>
+                      </div>
+                      <div>
+                        <span className="font-medium text-gray-700">Budget</span>
+                        <p className="text-gray-600">{campaign.budget}</p>
                       </div>
                     </div>
-                  </div>
-                  <Button 
-                    className="bg-brand-500 hover:bg-brand-600"
-                    onClick={() => handleLaunchCampaign(campaign.title)}
-                  >
-                    Launch Campaign
-                  </Button>
+                  </CardContent>
                 </div>
-              </CardHeader>
-              <CardContent>
-                <p className="text-gray-600 mb-4">{campaign.description}</p>
-                
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                  <div>
-                    <span className="font-medium text-gray-700">Est. Reach</span>
-                    <p className="text-brand-600">{campaign.estimatedReach}</p>
-                  </div>
-                  <div>
-                    <span className="font-medium text-gray-700">Expected Engagement</span>
-                    <p className="text-green-600">{campaign.expectedEngagement}</p>
-                  </div>
-                  <div>
-                    <span className="font-medium text-gray-700">Timeline</span>
-                    <p className="text-gray-600">{campaign.timeline}</p>
-                  </div>
-                  <div>
-                    <span className="font-medium text-gray-700">Budget</span>
-                    <p className="text-gray-600">{campaign.budget}</p>
-                  </div>
-                </div>
-              </CardContent>
+              </div>
             </Card>
           ))}
         </motion.div>
