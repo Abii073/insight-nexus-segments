@@ -50,10 +50,10 @@ const AttributeRhombus = ({ breakdown, size = 'md', className = '' }: AttributeR
     }
   };
 
-  // Calculate points for the radar chart
+  // Calculate points for the radar chart with larger dimensions
   const centerX = 60;
   const centerY = 60;
-  const maxRadius = 35;
+  const maxRadius = 50; // Increased from 35 to 50
   
   // Define the 4 angles for diamond/rhombus shape (top, right, bottom, left)
   const angles = [0, 90, 180, 270].map(deg => (deg - 90) * Math.PI / 180); // Offset by -90 to start at top
@@ -121,8 +121,8 @@ const AttributeRhombus = ({ breakdown, size = 'md', className = '' }: AttributeR
                     points.slice(1).map(point => `L ${point.x} ${point.y}`).join(' ') + ' Z'}
                 fill="none"
                 stroke="#e5e7eb"
-                strokeWidth="0.5"
-                opacity={0.5}
+                strokeWidth="1" // Increased from 0.5
+                opacity={0.6} // Increased from 0.5
               />
             ))}
 
@@ -135,8 +135,8 @@ const AttributeRhombus = ({ breakdown, size = 'md', className = '' }: AttributeR
                 x2={centerX + Math.cos(angle) * maxRadius}
                 y2={centerY + Math.sin(angle) * maxRadius}
                 stroke="#e5e7eb"
-                strokeWidth="0.5"
-                opacity={0.5}
+                strokeWidth="1" // Increased from 0.5
+                opacity={0.6} // Increased from 0.5
               />
             ))}
 
@@ -152,7 +152,7 @@ const AttributeRhombus = ({ breakdown, size = 'md', className = '' }: AttributeR
               d={dataPath}
               fill="url(#radarGradient)"
               stroke="#3b82f6"
-              strokeWidth="2"
+              strokeWidth="3" // Increased from 2
               initial={{ opacity: 0.6 }}
               animate={{ opacity: isHovered ? 0.8 : 0.6 }}
               transition={{ duration: 0.2 }}
@@ -164,10 +164,10 @@ const AttributeRhombus = ({ breakdown, size = 'md', className = '' }: AttributeR
                 key={index}
                 cx={point.x}
                 cy={point.y}
-                r={hoveredIndex === index ? "5" : "4"}
+                r={hoveredIndex === index ? "7" : "6"} // Increased from 5/4
                 fill={point.dynamicColor}
                 stroke="white"
-                strokeWidth="2"
+                strokeWidth="3" // Increased from 2
                 className="cursor-pointer"
                 onMouseEnter={() => setHoveredIndex(index)}
                 initial={{ scale: 1 }}
@@ -186,14 +186,14 @@ const AttributeRhombus = ({ breakdown, size = 'md', className = '' }: AttributeR
             <circle
               cx={centerX}
               cy={centerY}
-              r="10"
+              r="15" // Increased from 10
               fill="white"
               stroke="#3b82f6"
-              strokeWidth="2"
+              strokeWidth="3" // Increased from 2
             />
             <text
               x={centerX}
-              y={centerY + 4}
+              y={centerY + 5} // Adjusted for larger circle
               textAnchor="middle"
               className={`font-bold fill-blue-600 ${textSizeClasses[size]}`}
             >
