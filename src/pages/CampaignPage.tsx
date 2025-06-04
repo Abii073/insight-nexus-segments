@@ -64,7 +64,7 @@ const CampaignPage = () => {
   ];
 
   const handleLaunchCampaign = (campaignTitle: string) => {
-    navigate(`/campaigns/execution?campaign=${encodeURIComponent(campaignTitle)}`);
+    navigate(`/campaigns/loading?campaign=${encodeURIComponent(campaignTitle)}`);
   };
 
   // Get attribute breakdown for the current segment

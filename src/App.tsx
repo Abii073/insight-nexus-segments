@@ -10,6 +10,7 @@ import InstitutionSelectionPage from "./pages/InstitutionSelectionPage";
 import AuthPage from "./pages/AuthPage";
 import DataIntegrationHub from "./pages/DataIntegrationHub";
 import LoadingScreen from "./components/LoadingScreen";
+import CampaignLoadingScreen from "./components/CampaignLoadingScreen";
 import AttributeSelectionPage from "./pages/AttributeSelectionPage";
 import OctagonViewPage from "./pages/OctagonViewPage";
 import SegmentProfilePage from "./pages/SegmentProfilePage";
@@ -36,6 +37,7 @@ const App = () => (
             <Route path="/auth" element={<AuthPage />} />
             <Route path="/data-integration" element={<DataIntegrationHub />} />
             <Route path="/loading" element={<LoadingScreen />} />
+            <Route path="/campaigns/loading" element={<CampaignLoadingScreen />} />
             <Route path="/attributes" element={<AttributeSelectionPage />} />
             <Route path="/octagon" element={<OctagonViewPage />} />
             <Route path="/profiles/:segmentId" element={<SegmentProfilePage />} />
